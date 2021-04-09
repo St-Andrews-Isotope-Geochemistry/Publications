@@ -1,7 +1,7 @@
-# Materials and code associated with Rae et al., 2020
+# Materials and code associated with Rae et al., 2021
 
 ## Citation
-James W.B. Rae, Yi Ge Zhang, Xiaoqing Liu, Gavin L. Foster, Heather M. Stoll and Ross D.M. Whiteford, **2020**, _Atmospheric CO_<sub>2</sub> _over the last 66 million years from marine archives_.
+James W.B. Rae, Yi Ge Zhang, Xiaoqing Liu, Gavin L. Foster, Heather M. Stoll and Ross D.M. Whiteford, **2021**, _Atmospheric CO_<sub>2</sub> _over the last 66 million years from marine archives_.
 
 ## Quick Links
 - [Figure 3](#figure-3)
@@ -24,6 +24,8 @@ James W.B. Rae, Yi Ge Zhang, Xiaoqing Liu, Gavin L. Foster, Heather M. Stoll and
   ![Figure 7][figure7]
 ### Figure 8
   ![Figure 8][figure8]
+
+Some figures are slightly different to those in the manuscript due to the copy editing process.
 
 ## How to download
 ```
