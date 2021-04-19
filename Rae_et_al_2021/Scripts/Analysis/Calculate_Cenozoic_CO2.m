@@ -3,20 +3,20 @@
 
 tic
 %% Load data 
-boron_data_path = './Data/Rae_2021_Boron_DataInput.xlsx';
+boron_data_path = './../../Data/Rae_2021_Boron_DataInput.xlsx';
 d11B_data = readtable(boron_data_path,'sheet','d11Bdata_byStudy');
 d11B_sw = readtable(boron_data_path,'sheet','d11Bsw');
 
 mg_ca_average = readtable(boron_data_path,'sheet','Mg_Ca_sw');
 
-CCDZT19 = readtable('./Data/ZeebeTyrrell_2019.xlsx');
+CCDZT19 = readtable('./../../Data/ZeebeTyrrell_2019.xlsx');
 
 % Alkenone Ep
 % Anchored approach
-Alk_anch = readtable('./Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
+Alk_anch = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
 Alk_anch = sortrows(Alk_anch,'age');
 % Diffusive approach
-Alk_diff = readtable('./Data/Rae_2021_Alkenone_CO2.xlsx','sheet','diffusive');
+Alk_diff = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','diffusive');
 Alk_diff = sortrows(Alk_diff,'age');
 
 % alkenone comp
@@ -241,22 +241,30 @@ for output_index = 1:numel(output_to_save)
     d11B_ep_results.(output_to_save_as(output_index)) = ep_results.(output_to_save(output_index));
 end
 
-%% correct ODP 999 disequilibrium for all treatments 
-
-co2_treatment_names = ["d11B_data_alkalinity","d11B_data_alkalinity_low","d11B_data_alkalinity_high","d11B_d11Bswlow_results","d11B_d11Bswhigh_results","d11B_dic_results"];%,d11B_omega_results{1,2},d11B_omega_results{2,2},d11B_omega_results{3,2}];
-co2_data = cell(numel(co2_treatment_names),1);
-
-% -21 ppm from 999 to correct for air-sea disequilibrium
-for co2_index = 1:numel(co2_data)
-    odp999 = find(strcmp(co2_data{co2_index}.site,'999A')|strcmp(co2_data{co2_index}.site,'999'));
-    co2_data{co2_index}.xco2_ODP999_NOTcorrected_for_disequilibrium = co2_data{co2_index}.xco2;
-
-    co2_data{co2_index}.xco2(odp999) = co2_data{co2_index}.xco2(odp999)-21;
+%% correct ODP 999 disequilibrium for all treatments
+all_results = [d11B_alkalinity_results,{d11B_d11Bswlow_results},{d11B_d11Bswhigh_results},{d11B_dic_results},d11B_omega_results(:)',{d11B_ccd_results},{d11B_ep_results}];
+for result_index = 1:numel(all_results)
+    result = all_results(result_index);
     
+    result{1}.disequilibrium_correction = zeros(height(result{1}),1);
+    result{1}.disequilibrium_correction(strcmp(result{1}.site,'999A')|strcmp(result{1}.site,'999')) = -21;
+    result{1}.uncorrected_xco2 = result{1}.xco2;
+    result{1}.uncorrected_pco2 = result{1}.pco2;
+    result{1}.xco2 = result{1}.xco2 + result{1}.disequilibrium_correction;
+    result{1}.pco2 = result{1}.pco2 + result{1}.disequilibrium_correction;
+    
+    all_results(result_index) = result;
 end
+d11B_alkalinity_results = all_results(1:3);
+d11B_d11Bswlow_results = all_results{4};
+d11B_d11Bswhigh_results = all_results{5};
+d11B_dic_results = all_results{6};
+d11B_omega_results = reshape(all_results(7:15),3,3);
+d11B_ccd_results = all_results{16};
+d11B_ep_results = all_results{17};
 
 %% Save results
-output_filename = "./Data/Rae_2021_Boron_Precalculated.xlsx";
+output_filename = "./../../Data/Rae_2021_Boron_Precalculated.xlsx";
 writetable(d11B_data,output_filename,'Sheet',"d11B_data");
 
 writetable(d11B_alkalinity_results{2},output_filename,'Sheet',"alkalinity");
@@ -283,5 +291,5 @@ writetable(d11B_omega_results{1,1},output_filename,'Sheet',"omega5_low_ca");
 writetable(d11B_omega_results{2,1},output_filename,'Sheet',"omega65_low_ca");
 writetable(d11B_omega_results{3,1},output_filename,'Sheet',"omega8_low_ca");
 
-save("./Data/Rae_2021_Cenozoic_CO2_Workspace.mat");
+save("./../../Data/Rae_2021_Cenozoic_CO2_Workspace.mat");
 toc
