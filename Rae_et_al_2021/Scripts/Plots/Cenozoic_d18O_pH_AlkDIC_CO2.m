@@ -1,17 +1,17 @@
 % plot Cenozoic d11B data
 %% Load data
 % d18O
-westerhold2020 = readtable('./Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
+westerhold2020 = readtable('./../../Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
 
-Epochs = readtable('./Data/Cenozoic_Epochs.xlsx');
+Epochs = readtable('./../../Data/Cenozoic_Epochs.xlsx');
 
 % CO2
 co2_sheet_names = ["ccd","Omega65","Omega5","Omega8","dic","alkalinity_high","alkalinity_low","alkalinity"];
 for sheet_index = 1:numel(co2_sheet_names)
-    co2_data{sheet_index} = readtable("./Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
+    co2_data{sheet_index} = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 
-ca_mg = readtable('./Data/Mg_Ca_Compilation.xlsx','sheet','Matlab_average');
+ca_mg = readtable('./../../Data/Publication/Rae_2021_Boron_pH_CO2_CO2system.xlsx','sheet','Mg_Ca_sw');
 
 %% Analyse the data
 westerhold2020 = westerhold2020(~isnan(westerhold2020.age) & ~isnan(westerhold2020.d18O),:);
@@ -149,7 +149,7 @@ end
 for plot_index = 1:2:number_of_plots
     current_label = get(plot_handles(plot_index),'YLabel');
     current_label.Rotation = -90;
-    current_label.Position(1) = -11;
+    current_label.Position(1) = -14;
 end
 
 

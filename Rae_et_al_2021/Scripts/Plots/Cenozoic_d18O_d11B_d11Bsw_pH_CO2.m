@@ -1,27 +1,27 @@
 % Plot of Cenozoic d18O, d11B, d11B_sw, pH and Atmospheric CO2
 %% Load in the data
 % d18O
-westerhold2020 = readtable('./Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
+westerhold2020 = readtable('./../../Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
 
 % d11B_sw
-paris2010 = readtable('./Data/d11Bsw_compilation.xlsx','sheet','Paris2010'); % halites - no outliers removed
-raitzsch2013 = readtable('./Data/d11Bsw_compilation.xlsx','sheet','Raitzsch2013'); % Raitzsch & Honisch version using Klochko
-lemarchand2000 = readtable('./Data/d11Bsw_compilation.xlsx','sheet','Lemarchand2000'); % Lemarchand cnst rivers version
-anagnostou2016 = readtable('./Data/d11Bsw_compilation.xlsx','sheet','Anagnostou2016'); % Eleni
-greenop2017 = readtable('./Data/d11Bsw_compilation.xlsx','sheet','Greenop2017_boxes'); % Greenop - plot boxes as in Figure 10
-greenop2017_smooth = readtable('./Data/d11Bsw_compilation.xlsx','sheet','Greenop2017_smooth');
-henehan2019 = readtable('./Data/d11Bsw_compilation.xlsx','sheet','Henehan2019updated'); % Henehan 2019
-henehan2020 = readtable('./Data/d11Bsw_compilation.xlsx','sheet','Henehan2020'); % Henehan 2020
-rae2021 = readtable('./Data/d11Bsw_compilation.xlsx','sheet','Rae2021Comp');
+paris2010 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Paris2010'); % halites - no outliers removed
+raitzsch2013 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Raitzsch2013'); % Raitzsch & Honisch version using Klochko
+lemarchand2000 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Lemarchand2000'); % Lemarchand cnst rivers version
+anagnostou2016 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Anagnostou2016'); % Eleni
+greenop2017 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Greenop2017_boxes'); % Greenop - plot boxes as in Figure 10
+greenop2017_smooth = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Greenop2017_smooth');
+henehan2019 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Henehan2019updated'); % Henehan 2019
+henehan2020 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Henehan2020'); % Henehan 2020
+rae2021 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Rae2021Comp');
 
 % pH
-d11B_pH = readtable("./Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet","d11B_data");
+d11B_pH = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet","d11B_data");
 
 % CO2
-co2_sheet_names = ["ccd","Omega65","Omega5","Omega8","dic","alkalinity_high","alkalinity_low","alkalinity"];
+co2_sheet_names = ["ccd","Omega65","Omega5","Omega8","dic","alkalinity_high","alkalinity_low","alkalinity","alkalinity_d11Bswlow","alkalinity_d11Bswhigh"];
 
 for sheet_index = 1:numel(co2_sheet_names)
-    co2_data{sheet_index} = readtable("./Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
+    co2_data{sheet_index} = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 
 %% Analyse the data
@@ -71,7 +71,7 @@ d11B_pH.size(scale_down_boolean,:) = 6;
 d11B_pH.size(d11B_pH.size>10,:) = 10;
 
 for d11B_index = 1:height(d11B_pH)
-    plot([d11B_pH.age(d11B_index)/1000,d11B_pH.age(d11B_index)/1000],[d11B_pH.d11B_4(d11B_index)-d11B_pH.d11B_uncertainty(d11B_index),d11B_pH.d11B_4(d11B_index)+d11B_pH.d11B_uncertainty(d11B_index)],'Color',[0.5,0.5,0.5],'Parent',plot_handles(current_plot_index))
+    plot([d11B_pH.age(d11B_index)/1000,d11B_pH.age(d11B_index)/1000],[d11B_pH.d11B_4(d11B_index)-d11B_pH.d11B_2SD(d11B_index),d11B_pH.d11B_4(d11B_index)+d11B_pH.d11B_2SD(d11B_index)],'Color',[0.5,0.5,0.5],'Parent',plot_handles(current_plot_index))
 end
 for d11B_index = 1:height(d11B_pH)
     plot(d11B_pH.age(d11B_index)/1000,d11B_pH.d11B_4(d11B_index),d11B_pH.symbol{d11B_index},'MarkerEdgeColor',rgb('Black'),'LineWidth',0.2,'MarkerFaceColor',rgb(d11B_pH.colour(d11B_index)),'MarkerSize',d11B_pH.size(d11B_index)-2,'Parent',plot_handles(current_plot_index))
@@ -126,8 +126,8 @@ plot(d11B_pH.age/1000, d11B_pH.pH,'o','MarkerEdgeColor',rgb('Gray'),'MarkerFaceC
 % plot(Alld11B.age/1000, Alld11B.pH,'o','MarkerEdgeColor',[0.05,0.05,0.05],'MarkerFaceColor','None','MarkerSize',5,'Parent',plot_handles(current_plot_index))
 
 % do for variable d11Bsw
-plot(d11B_pH.age/1000,smooth(d11B_pH.age/1000,d11B_pH.pH_low,20),'--','Color',[0.3,0.3,0.3],'LineWidth',1,'Parent',plot_handles(current_plot_index))
-plot(d11B_pH.age/1000,smooth(d11B_pH.age/1000,d11B_pH.pH_high,20),'--','Color',[0.3,0.3,0.3],'LineWidth',1,'Parent',plot_handles(current_plot_index))
+plot(d11B_pH.age/1000,smooth(d11B_pH.age/1000,co2_data{9}.pH_swlow,20),'--','Color',[0.3,0.3,0.3],'LineWidth',1,'Parent',plot_handles(current_plot_index))
+plot(d11B_pH.age/1000,smooth(d11B_pH.age/1000,co2_data{10}.pH_swhigh,20),'--','Color',[0.3,0.3,0.3],'LineWidth',1,'Parent',plot_handles(current_plot_index))
 plot(d11B_pH.age/1000,d11B_pH.pH,'o','MarkerEdgeColor',[0.05,0.05,0.05],'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
 
 % Labelling

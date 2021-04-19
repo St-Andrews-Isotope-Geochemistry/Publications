@@ -2,18 +2,26 @@
 %% Load the data
 co2_sheet_names = ["alkalinity_low","alkalinity","alkalinity_high"];
 for sheet_index = 1:numel(co2_sheet_names)
-    co2_data{sheet_index} = readtable("./Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
+    co2_data{sheet_index} = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 
-hs = readtable('./Data/Stoll_2019_Alkenone_CO2.xlsx','sheet','Matlab');
-yz = readtable('./Data/Zhang_2017_Alkenone_CO2.xlsx','sheet','Matlab');
+% hs = readtable('./../../Data/Stoll_2019_Alkenone_CO2.xlsx','sheet','Matlab');
+% yz = readtable('./../../Data/Zhang_2017_Alkenone_CO2.xlsx','sheet','Matlab');
 
-ice_data = readtable('./Data/Bereiter_2015');
+% Alkenone Ep
+% Anchored approach
+Alk_anch = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
+Alk_anch = sortrows(Alk_anch,'age');
+% Diffusive approach
+Alk_diff = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','diffusive');
+Alk_diff = sortrows(Alk_diff,'age');
 
-% load ./Data/SSPs.mat
-SSP_data = readtable('./Data/SSPs.xlsx');
-law_CO2 = readtable('./Data/Recent_CO2.xlsx','sheet','Law_smooth');
-mauna_loa_CO2 = readtable('./Data/Recent_CO2.xlsx','sheet','MaunaLoaAnnual');
+ice_data = readtable('./../../Data/Bereiter_2015');
+
+% load ./../../Data/SSPs.mat
+SSP_data = readtable('./../../Data/SSPs.xlsx');
+law_CO2 = readtable('./../../Data/Recent_CO2.xlsx','sheet','Law_smooth');
+mauna_loa_CO2 = readtable('./../../Data/Recent_CO2.xlsx','sheet','MaunaLoaAnnual');
 
 %% Analyse the data
 % -21 ppm from 999 to correct for air-sea disequilibrium
@@ -28,12 +36,10 @@ for co2_index = 1:numel(co2_data)
     co2_smooth{co2_index} = smooth(co2_data{co2_index}.age/1000,co2_data{co2_index}.xco2,smoothing);
 end
 
-% Stoll data
-hs = sortrows(hs,'age');
-
-% Zhang data
-yz = sortrows(yz,'age');
-yz_old_boolean = (yz.age>23000);
+% alkenone comp
+ep_age = [Alk_anch.age(Alk_anch.age/1000<23); Alk_diff.age(Alk_diff.age/1000>23)];
+ep_co2 = [Alk_anch.co2(Alk_anch.age/1000<23); Alk_diff.co2(Alk_diff.age/1000>23)];
+ep_combined = table(ep_age,ep_co2);
 
 % Calculate SSP_data age
 SSP_data.age = 1950-SSP_data.year;
@@ -60,8 +66,8 @@ current_plot_index = 1;
 hold(plot_handles(current_plot_index),'on');
 set(plot_handles(current_plot_index),'Xlim',[1,70]);
 
-plot(yz.age(yz_old_boolean)/1000,yz.pCO2_benthic_84_1(yz_old_boolean),'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',ep_size,'Parent',plot_handles(current_plot_index))
-plot(hs.age/1000,hs.pCO2,'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',ep_size,'Parent',plot_handles(current_plot_index))
+plot(Alk_anch.age/1000,Alk_anch.co2_84pc,'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',ep_size,'Parent',plot_handles(current_plot_index))
+plot(Alk_diff.age/1000,Alk_diff.co2,'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',ep_size,'Parent',plot_handles(current_plot_index))
 
 % Boron data
 plot(co2_data{2}.age/1000,co2_data{2}.xco2,'o','MarkerEdgeColor',rgb('DarkBlue'),'MarkerFaceColor','none','MarkerSize',6,'Parent',plot_handles(current_plot_index))

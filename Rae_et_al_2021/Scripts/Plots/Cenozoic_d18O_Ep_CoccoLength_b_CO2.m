@@ -1,15 +1,15 @@
 % Plot Cenozoic d18O, Ep, Cocco length, b and CO2 data
 %% Load the data
-westerhold2020 = readtable('./Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
+westerhold2020 = readtable('./../../Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
 
-% Stoll data
-hs = readtable('./Data/Stoll_2019_Alkenone_CO2.xlsx','Sheet','Matlab','Format','Auto');
-
-% Zhang data
-yz = readtable('./Data/Zhang_2017_Alkenone_CO2.xlsx','Sheet','Matlab','Format','Auto');
+% Alkenone Ep
+% Anchored approach
+Alk_anch = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
+% Diffusive approach
+Alk_diff = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','diffusive');
 
 % Epoch data
-epochs = readtable('./Data/Cenozoic_Epochs.xlsx');
+epochs = readtable('./../../Data/Cenozoic_Epochs.xlsx');
 
 %% Analyse the data
 % Remove NaN and smooth Westerhold
@@ -18,7 +18,8 @@ westerhold2020 = sortrows(westerhold2020);
 westerhold2020.smooth = smooth(westerhold2020.age,westerhold2020.d18O_corrected,30,'loess');
 
 % Alkenones
-yz_old = yz(yz.age>23000,:);
+Alk_anch = sortrows(Alk_anch,'age');
+Alk_diff = sortrows(Alk_diff,'age');
 
 %% Make the figure
 age_limits = [0,60];
@@ -55,16 +56,16 @@ end
 current_plot_index = number_of_plots-1;
 hold(plot_handles(current_plot_index),'on')
 
-for hs_index = 1:height(hs)
-    plot(hs.age(hs_index)/1000,hs.ep(hs_index),'o','MarkerEdgeColor',rgb(hs.colour(hs_index)),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
+for anchored_index = 1:height(Alk_anch)
+    plot(Alk_anch.age(anchored_index)/1000,Alk_anch.ep(anchored_index),'o','MarkerEdgeColor',rgb(Alk_anch.colour(anchored_index)),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
 end
-for yz_index = 1:height(yz)
-    plot(yz.age(yz_index)/1000,yz.ep_50(yz_index),'x','MarkerEdgeColor',rgb(yz.colour(yz_index)),'MarkerFaceColor','none','MarkerSize',yz.size(yz_index),'Parent',plot_handles(current_plot_index))
+for diffusive_index = 1:height(Alk_diff)
+    plot(Alk_diff.age(diffusive_index)/1000,Alk_diff.ep_50pc(diffusive_index),'x','MarkerEdgeColor',rgb(Alk_diff.colour(diffusive_index)),'MarkerFaceColor','none','MarkerSize',Alk_diff.size(diffusive_index),'Parent',plot_handles(current_plot_index))
 end
-for yz_old_index = 1:height(yz_old)
-%     plot(yz_old.age(yz_old_index)/1000,yz_old.ep_50(yz_old_index),'x','MarkerEdgeColor',rgb(yz_old.colour(yz_old_index)),'MarkerFaceColor','none','MarkerSize',yz_old.size(yz_old_index),'Parent',plot_handles(current_plot_index))
-    plot(yz_old.age(yz_old_index)/1000,yz_old.ep_50_benthic_84_1(yz_old_index),'s','MarkerEdgeColor',rgb(yz_old.colour(yz_old_index)),'MarkerFaceColor','none','MarkerSize',yz_old.size(yz_old_index),'Parent',plot_handles(current_plot_index))
-end
+% for yz_old_index = 1:height(yz_old)
+% %     plot(yz_old.age(yz_old_index)/1000,yz_old.ep_50(yz_old_index),'x','MarkerEdgeColor',rgb(yz_old.colour(yz_old_index)),'MarkerFaceColor','none','MarkerSize',yz_old.size(yz_old_index),'Parent',plot_handles(current_plot_index))
+%     plot(yz_old.age(yz_old_index)/1000,yz_old.ep_50_benthic_84_1(yz_old_index),'s','MarkerEdgeColor',rgb(yz_old.colour(yz_old_index)),'MarkerFaceColor','none','MarkerSize',yz_old.size(yz_old_index),'Parent',plot_handles(current_plot_index))
+% end
 
 ylabel(plot_handles(current_plot_index),[char(949),'_p (',char(8240),')'])
 axis(plot_handles(current_plot_index),[age_limits(1) age_limits(2) -inf inf])
@@ -74,8 +75,8 @@ set(plot_handles(current_plot_index),'YScale','log')
 current_plot_index = number_of_plots-2;
 hold(plot_handles(current_plot_index),'on')
 
-for yz_index = 1:height(yz)
-    plot(yz.age(yz_index)/1000,yz.coccolith_length(yz_index),'d','MarkerEdgeColor',rgb(yz.colour(yz_index)),'MarkerFaceColor','none','MarkerSize',yz.size(yz_index),'Parent',plot_handles(current_plot_index))
+for diffusive_index = 1:height(Alk_diff)
+    plot(Alk_diff.age(diffusive_index)/1000,Alk_diff.coccolith_length(diffusive_index),'d','MarkerEdgeColor',rgb(Alk_diff.colour(diffusive_index)),'MarkerFaceColor','none','MarkerSize',Alk_diff.size(diffusive_index),'Parent',plot_handles(current_plot_index))
 end
 
 ylabel(plot_handles(current_plot_index),'Cocco mean Length (\mum)')
@@ -86,12 +87,9 @@ current_plot_index = number_of_plots-3;
 hold(plot_handles(current_plot_index),'on')
 
 
-for yz_index = 1:height(yz)
-    plot(yz.age(yz_index)/1000,yz.b_50(yz_index),'p','MarkerEdgeColor',rgb(yz.colour(yz_index)),'MarkerFaceColor','none','MarkerSize',yz.size(yz_index),'Parent',plot_handles(current_plot_index))
+for diffusive_index = 1:height(Alk_diff)
+    plot(Alk_diff.age(diffusive_index)/1000,Alk_diff.b_50pc(diffusive_index),'p','MarkerEdgeColor',rgb(Alk_diff.colour(diffusive_index)),'MarkerFaceColor','none','MarkerSize',Alk_diff.size(diffusive_index),'Parent',plot_handles(current_plot_index))
 end
-% for yz_old_index = 1:height(yz_old)
-%     plot(yz_old.age(yz_old_index)/1000,yz_old.b_50_benthic_84_1(yz_old_index),'s','MarkerEdgeColor',rgb(yz_old.colour(yz_old_index)),'MarkerFaceColor','none','MarkerSize',yz_old.size(yz_old_index),'Parent',plot_handles(current_plot_index))
-% end
 
 ylabel(plot_handles(current_plot_index),'b')
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),60,inf])
@@ -101,15 +99,15 @@ set(plot_handles(current_plot_index),'YDir','reverse')
 current_plot_index = number_of_plots-4;
 hold(plot_handles(current_plot_index),'on')
 
-for hs_index = 1:height(hs)
-    plot(hs.age(hs_index)/1000,hs.CO2(hs_index),hs.symbol{hs_index},'MarkerEdgeColor',rgb(hs.colour(hs_index)),'MarkerFaceColor','none','MarkerSize',hs.size(hs_index),'Parent',plot_handles(current_plot_index))
+for anchored_index = 1:height(Alk_anch)
+    plot(Alk_anch.age(anchored_index)/1000,Alk_anch.co2(anchored_index),Alk_anch.symbol{anchored_index},'MarkerEdgeColor',rgb(Alk_anch.colour(anchored_index)),'MarkerFaceColor','none','MarkerSize',Alk_anch.size(anchored_index),'Parent',plot_handles(current_plot_index))
 end
-for yz_index = 1:height(yz)
-    plot(yz.age(yz_index)/1000,yz.CO2(yz_index),'x','MarkerEdgeColor',rgb(yz.colour(yz_index)),'MarkerFaceColor','none','MarkerSize',yz.size(yz_index),'Parent',plot_handles(current_plot_index))
+for diffusive_index = 1:height(Alk_diff)
+    plot(Alk_diff.age(diffusive_index)/1000,Alk_diff.co2(diffusive_index),'x','MarkerEdgeColor',rgb(Alk_diff.colour(diffusive_index)),'MarkerFaceColor','none','MarkerSize',Alk_diff.size(diffusive_index),'Parent',plot_handles(current_plot_index))
 end
-for yz_old_index = 1:height(yz_old)
-    plot(yz_old.age(yz_old_index)/1000,yz_old.CO2_benthic_84_1(yz_old_index),'s','MarkerEdgeColor',rgb(yz_old.colour(yz_old_index)),'MarkerFaceColor','none','MarkerSize',yz_old.size(yz_old_index),'Parent',plot_handles(current_plot_index))
-end
+% for yz_old_index = 1:height(yz_old)
+%     plot(yz_old.age(yz_old_index)/1000,yz_old.CO2_benthic_84_1(yz_old_index),'s','MarkerEdgeColor',rgb(yz_old.colour(yz_old_index)),'MarkerFaceColor','none','MarkerSize',yz_old.size(yz_old_index),'Parent',plot_handles(current_plot_index))
+% end
 
 ylabel(plot_handles(current_plot_index),'Atmospheric CO_2 (ppm)')
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,inf])

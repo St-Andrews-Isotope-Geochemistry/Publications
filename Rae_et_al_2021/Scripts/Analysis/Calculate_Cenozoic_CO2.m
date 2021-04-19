@@ -264,7 +264,7 @@ d11B_ccd_results = all_results{16};
 d11B_ep_results = all_results{17};
 
 %% Save results
-output_filename = "./../../Data/Rae_2021_Boron_Precalculated.xlsx";
+output_filename = "./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx";
 writetable(d11B_data,output_filename,'Sheet',"d11B_data");
 
 writetable(d11B_alkalinity_results{2},output_filename,'Sheet',"alkalinity");

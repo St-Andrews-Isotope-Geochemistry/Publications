@@ -1,18 +1,21 @@
 % Plot Cenozoic temperature, sea level and CO2 data
 %% Load the data
-westerhold2020 = readtable('./Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
+westerhold2020 = readtable('./../../Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
 
-sea_level = readtable('./Data/Miller_2020_SeaLevel.xlsx','sheet','data');
-sea_level_smooth = readtable('./Data/Miller_2020_SeaLevel.xlsx','sheet','smooth');
+sea_level = readtable('./../../Data/Miller_2020_SeaLevel.xlsx','sheet','data');
+sea_level_smooth = readtable('./../../Data/Miller_2020_SeaLevel.xlsx','sheet','smooth');
 
-hs = readtable('./Data/Stoll_2019_Alkenone_CO2.xlsx','sheet','Matlab');
-yz = readtable('./Data/Zhang_2017_Alkenone_CO2.xlsx','sheet','Matlab');
+% Alkenone Ep
+% Anchored approach
+Alk_anch = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
+% Diffusive approach
+Alk_diff = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','diffusive');
 
 % CO2
 co2_sheet_names = ["alkalinity_low","alkalinity","alkalinity_high"];
 co2_data = cell(numel(co2_sheet_names),1);
 for sheet_index = 1:numel(co2_sheet_names)
-    co2_data{sheet_index} = readtable("./Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
+    co2_data{sheet_index} = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 
 %% Analyse the data
@@ -22,16 +25,9 @@ westerhold2020 = sortrows(westerhold2020);
 westerhold2020.smooth = smooth(westerhold2020.age,westerhold2020.d18O_corrected,30,'loess');
 westerhold2020.surface_ocean_temperature_smooth = smooth(westerhold2020.age,westerhold2020.surface_ocean_temperature,100,'loess');
 
-% Stoll data
-hs = sortrows(hs,'age');
-
-% Zhang data
-yz = sortrows(yz,'age');
-yz_old_boolean = (yz.age>23000);
-
-ep_age = [hs.age(hs.age/1000<23);yz.age(yz.age/1000>23)];
-ep_co2 = [hs.pCO2(hs.age/1000<23);yz.pCO2(yz.age/1000>23)];
-ep_co2_smooth = smooth(ep_age/1000,ep_co2,30);
+% Alkenones
+Alk_anch = sortrows(Alk_anch,'age');
+Alk_diff = sortrows(Alk_diff,'age');
 
 % -21 ppm from 999 to correct for air-sea disequilibrium
 for co2_index = 1:numel(co2_data)
@@ -86,10 +82,8 @@ axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,inf])
 current_plot_index = number_of_plots-2;
 hold(plot_handles(current_plot_index),'on')
 
-plot(hs.age/1000, log2(hs.pCO2),'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
-plot(yz.age(yz_old_boolean)/1000, log2(yz.pCO2_benthic_84_1(yz_old_boolean)),'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
-plot(ep_age/1000,log2(ep_co2_smooth),'--','Color',rgb('SteelBlue'),'LineWidth',1,'Parent',plot_handles(current_plot_index))
-
+plot(Alk_anch.age/1000, log2(Alk_anch.co2),'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
+plot(Alk_diff.age/1000, log2(Alk_diff.co2_84pc),'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
 
 for co2_data_index = 1:height(co2_data{2})
     plot(co2_data{2}.age(co2_data_index)/1000,log2(co2_data{2}.xco2(co2_data_index)),"Marker","o",'Color',rgb('DarkBlue'),'MarkerSize',7,'Parent',plot_handles(current_plot_index))
@@ -144,5 +138,5 @@ bottom_margin = 0.1*screen_size(4);
 set(gcf,'Position',[left_margin,bottom_margin,figure_width,figure_height]);
 
 %% Saving
-% exportgraphics(gcf,"./Figures/Cenozoic_SurfaceTemperature_SeaLevel_CO2.png","Resolution",600);
-% exportgraphics(gcf,"./Figures/Cenozoic_SurfaceTemperature_SeaLevel_CO2.pdf","ContentType","vector");
+exportgraphics(gcf,"./Figures/Cenozoic_SurfaceTemperature_SeaLevel_CO2.png","Resolution",600);
+exportgraphics(gcf,"./Figures/Cenozoic_SurfaceTemperature_SeaLevel_CO2.pdf","ContentType","vector");

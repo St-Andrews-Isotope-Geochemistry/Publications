@@ -2,27 +2,21 @@
 
 %% Load in the data
 % d18O
-westerhold2020 = readtable('./Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
+westerhold2020 = readtable('./../../Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
 
-mg_ca = readtable('./Data/Mg_Ca_Compilation.xlsx','sheet','Matlab_average');
-mg_ca_points = readtable('./Data/Mg_Ca_Compilation.xlsx','sheet','Matlab_points');
-
-% Stoll data
-hs = readtable('./Data/Stoll_2019_Alkenone_CO2.xlsx','Sheet','Matlab','Format','Auto');
-
-% Zhang data
-yz = readtable('./Data/Zhang_2017_Alkenone_CO2.xlsx','Sheet','Matlab','Format','Auto');
+mg_ca = readtable('./../../Data/Publication/Rae_2021_Boron_pH_CO2_CO2system.xlsx','sheet','Mg_Ca_sw');
+% mg_ca_points = readtable('./../../Data/Mg_Ca_Compilation.xlsx','sheet','Matlab_points');
 
 % pH
-d11B_pH = readtable("./Data/Rae_2021_Cenozoic_CO2.xlsx","Sheet","d11B_data");
+d11B_pH = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet","d11B_data");
 
 % CO2
-co2_sheet_names = ["ccd","Omega65","Omega5","Omega8","dic","alkalinity_high","alkalinity_low","alkalinity","ep_alkalinity_results","omega8_high_ca","omega8_low_ca","omega5_high_ca","omega5_low_ca"];
+co2_sheet_names = ["ccd","Omega65","Omega5","Omega8","dic","alkalinity_high","alkalinity_low","alkalinity","omega8_high_ca","omega8_low_ca","omega5_high_ca","omega5_low_ca"];
 for sheet_index = 1:numel(co2_sheet_names)
-    co2_data{sheet_index} = readtable("./Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
+    co2_data{sheet_index} = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
-co2_colours = ["Black","Grey","Grey","Grey","SteelBlue","DarkBlue","DarkBlue","DarkBlue","Orange","LightGrey","LightGrey","LightGrey","LightGrey"];
-co2_line_style = ["--","-",":",":","--",":",":","-","-",":",":",":",":"];
+co2_colours = ["Black","Grey","Grey","Grey","SteelBlue","DarkBlue","DarkBlue","Orange","LightGrey","LightGrey","LightGrey","LightGrey"];
+co2_line_style = ["--","-",":",":","--",":",":","-",":",":",":",":"];
 
 %% Analyse the data
 % d18O
@@ -30,10 +24,11 @@ westerhold2020 = westerhold2020(~isnan(westerhold2020.age) & ~isnan(westerhold20
 westerhold2020 = sortrows(westerhold2020);
 westerhold2020.d18O_smooth = smooth(westerhold2020.age,westerhold2020.d18O_corrected,30,'loess');
 
-Epochs = readtable('./Data/Cenozoic_Epochs.xlsx');
+Epochs = readtable('./../../Data/Cenozoic_Epochs.xlsx');
 
 % Alkenones
-yz_old = yz(yz.age>23000,:);
+Alk_anch = sortrows(Alk_anch,'age');
+Alk_diff = sortrows(Alk_diff,'age');
 
 %% Make the figure
 age_limits = [0,70];
@@ -81,19 +76,19 @@ current_plot_index = number_of_plots-2;
 hold(plot_handles(current_plot_index),'on');
 
 % Palike equatorial CCD
-load ./Data/Palike2012.mat
+load ./../../Data/Palike2012.mat
 plot(Palike2012.age./1000,Palike2012.DepthEqCCD./1000,'--','Color',rgb('Brown'),'LineWidth',1,'Parent',plot_handles(current_plot_index))
 
 % Lyle Pacific CCD
-Lyle08 = readtable('./Data/Lyle_2008_CCD_BoudreauGC.xlsx');
+Lyle08 = readtable('./../../Data/Lyle_2008_CCD_BoudreauGC.xlsx');
 plot(Lyle08.age,Lyle08.CCDdepth,'--','Color',rgb('Tan'),'LineWidth',1,'Parent',plot_handles(current_plot_index))
 
 % Van Andel 1975
-VanAnd75 = readtable('./Data/VanAndel_1975_CCD_TyrrellGC.xlsx');
+VanAnd75 = readtable('./../../Data/VanAndel_1975_CCD_TyrrellGC.xlsx');
 plot(VanAnd75.age,VanAnd75.CCDdepth,'-','Color',rgb('Sienna'),'LineWidth',1,'Parent',plot_handles(current_plot_index))
 
 % Tyrrell & Zeebe 2004
-TZ04 = readtable('./Data/Tyrrell_2004_CCD_GC.xlsx');
+TZ04 = readtable('./../../Data/Tyrrell_2004_CCD_GC.xlsx');
 plot(TZ04.age,TZ04.CCDdepth,'-','Color',rgb('Chocolate'),'LineWidth',1,'Parent',plot_handles(current_plot_index))
 
 ylabel(plot_handles(current_plot_index),'CCD Depth (m)')
@@ -108,10 +103,10 @@ plot(mg_ca.age, mg_ca.Ca,'--','Color',rgb('LightGray'),'LineWidth',2,'Parent',pl
 plot(mg_ca.age,mg_ca.Ca+mg_ca.Ca_up,':','Color',rgb('LightGray'),'LineWidth',2,'Parent',plot_handles(current_plot_index))
 plot(mg_ca.age,mg_ca.Ca-mg_ca.Ca_down,':','Color',rgb('LightGray'),'LineWidth',2,'Parent',plot_handles(current_plot_index))
 
-for mg_ca_index=1:height(mg_ca_points)
-    plot([mg_ca_points.age(mg_ca_index),mg_ca_points.age(mg_ca_index)],[mg_ca_points.Ca(mg_ca_index)-mg_ca_points.Ca_down(mg_ca_index),mg_ca_points.Ca(mg_ca_index)+mg_ca_points.Ca_up(current_plot_index)],'-','Color',rgb('LightGray'),'LineWidth',6,'Parent',plot_handles(current_plot_index))
+for mg_ca_index=1:height(mg_ca)
+    plot([mg_ca.age(mg_ca_index),mg_ca.age(mg_ca_index)],[mg_ca.Ca(mg_ca_index)-mg_ca.Ca_down(mg_ca_index),mg_ca.Ca(mg_ca_index)+mg_ca.Ca_up(mg_ca_index)],'-','Color',rgb('LightGray'),'LineWidth',6,'Parent',plot_handles(current_plot_index))
 end
-plot(mg_ca_points.age,mg_ca_points.Ca,'d','MarkerEdgeColor',rgb('Black'),'MarkerFaceColor',rgb('Grey'),'MarkerSize',8,'Parent',plot_handles(current_plot_index))
+plot(mg_ca.age,mg_ca.Ca,'d','MarkerEdgeColor',rgb('Black'),'MarkerFaceColor',rgb('Grey'),'MarkerSize',8,'Parent',plot_handles(current_plot_index))
 
 ylabel(plot_handles(current_plot_index),{'[Ca^{2+}]','(mmol/kg)'});
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),7,25])
@@ -189,9 +184,6 @@ co2_to_plot = [1,2,3,4,5,6,7,8,9,11,12];
 for co2_index = 1:numel(co2_to_plot)
     plot(co2_data{co2_to_plot(co2_index)}.age/1000,smooth(co2_data{co2_to_plot(co2_index)}.age/1000,co2_data{co2_to_plot(co2_index)}.xco2,smoothing),"LineStyle",co2_line_style(co2_to_plot(co2_index)),'Color',rgb(co2_colours(co2_to_plot(co2_index))),'LineWidth',1,'Parent',plot_handles(current_plot_index))     
 end
-% plot(hs.age/1000, hs.pCO2,'o','MarkerEdgeColor',rgb('DarkBlue'),'MarkerFaceColor','none','MarkerSize',4,'Parent',plot_handles(current_plot_index));
-% plot(yz.age/1000, yz.pCO2_benthic_84_15,'s','MarkerEdgeColor',rgb('DarkBlue'),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index));
-
 ylabel(plot_handles(current_plot_index),"CO2");
 
 %% axes etc
