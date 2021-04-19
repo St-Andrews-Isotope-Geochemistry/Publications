@@ -5,9 +5,6 @@ for sheet_index = 1:numel(co2_sheet_names)
     co2_data{sheet_index} = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 
-% hs = readtable('./../../Data/Stoll_2019_Alkenone_CO2.xlsx','sheet','Matlab');
-% yz = readtable('./../../Data/Zhang_2017_Alkenone_CO2.xlsx','sheet','Matlab');
-
 % Alkenone Ep
 % Anchored approach
 Alk_anch = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
@@ -24,12 +21,6 @@ law_CO2 = readtable('./../../Data/Recent_CO2.xlsx','sheet','Law_smooth');
 mauna_loa_CO2 = readtable('./../../Data/Recent_CO2.xlsx','sheet','MaunaLoaAnnual');
 
 %% Analyse the data
-% -21 ppm from 999 to correct for air-sea disequilibrium
-for co2_index = 1:numel(co2_data)
-    odp999 = find(strcmp(co2_data{co2_index}.ref,'Foster, 2008; Rae 2018 pH pCO2')|strcmp(co2_data{co2_index}.ref,'Foster, 2008')|strcmp(co2_data{co2_index}.ref,'Chalk et al., 2017')|strcmp(co2_data{co2_index}.ref,'Martínez-Botí et al., 2015')|strcmp(co2_data{co2_index}.ref,'de la Vega et al., 2020'));
-    co2_data{co2_index}.xco2(odp999) = co2_data{co2_index}.xco2(odp999)-21;
-end
-
 % Smoothing CO2
 smoothing = 30;
 for co2_index = 1:numel(co2_data)

@@ -29,12 +29,6 @@ westerhold2020.surface_ocean_temperature_smooth = smooth(westerhold2020.age,west
 Alk_anch = sortrows(Alk_anch,'age');
 Alk_diff = sortrows(Alk_diff,'age');
 
-% -21 ppm from 999 to correct for air-sea disequilibrium
-for co2_index = 1:numel(co2_data)
-    odp999 = find(strcmp(co2_data{co2_index}.ref,'Foster, 2008; Rae 2018 pH pCO2')|strcmp(co2_data{co2_index}.ref,'Chalk et al., 2017')|strcmp(co2_data{co2_index}.ref,'Martínez-Botí et al., 2015')|strcmp(co2_data{co2_index}.ref,'de la Vega et al., 2020'));
-    co2_data{co2_index}.xco2(odp999) = co2_data{co2_index}.xco2(odp999)-21;
-end
-
 % Smoothing CO2
 smoothing = 30;
 for co2_index = 1:numel(co2_data)
