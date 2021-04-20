@@ -3,7 +3,7 @@
 
 tic
 %% Load data 
-boron_data_path = './../../Data/Rae_2021_Boron_DataInput.xlsx';
+boron_data_path = './../../Data/Rae_2021_Boron_Data_Input.xlsx';
 d11B_data = readtable(boron_data_path,'sheet','d11Bdata_byStudy');
 d11B_sw = readtable(boron_data_path,'sheet','d11Bsw');
 
@@ -13,15 +13,15 @@ CCDZT19 = readtable('./../../Data/ZeebeTyrrell_2019.xlsx');
 
 % Alkenone Ep
 % Anchored approach
-Alk_anch = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
-Alk_anch = sortrows(Alk_anch,'age');
+alkenones_anchored = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
+alkenones_anchored = sortrows(alkenones_anchored,'age');
 % Diffusive approach
-Alk_diff = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','diffusive');
-Alk_diff = sortrows(Alk_diff,'age');
+alkenones_diffusive = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','diffusive');
+alkenones_diffusive = sortrows(alkenones_diffusive,'age');
 
 % alkenone comp
-ep_age = [Alk_anch.age(Alk_anch.age/1000<23); Alk_diff.age(Alk_diff.age/1000>23)];
-ep_co2 = [Alk_anch.co2(Alk_anch.age/1000<23); Alk_diff.co2(Alk_diff.age/1000>23)];
+ep_age = [alkenones_anchored.age(alkenones_anchored.age/1000<23); alkenones_diffusive.age(alkenones_diffusive.age/1000>23)];
+ep_co2 = [alkenones_anchored.co2(alkenones_anchored.age/1000<23); alkenones_diffusive.co2(alkenones_diffusive.age/1000>23)];
 ep_combined = table(ep_age,ep_co2);
 
 %% pH
@@ -35,6 +35,9 @@ d11B_data = sortrows(d11B_data,'age');
 % Interpolate calcium and magnesium concentrations
 d11B_data.calcium_seawater = interp1(mg_ca_average.age,mg_ca_average.Ca,d11B_data.age/1000);
 d11B_data.magnesium_seawater = interp1(mg_ca_average.age,mg_ca_average.Mg,d11B_data.age/1000);
+
+d11B_data_d11Bsw_low = d11B_data;
+d11B_data_d11Bsw_high = d11B_data;
 
 % Calculate d11B_4
 % Fill in calibration c and m
@@ -106,51 +109,83 @@ for alkalinity_index = 1:3
 end
 
 
-%% CONSTANT ALK, d11Bsw low and high % 
+%% CONSTANT ALKALINITY, d11Bsw LOW AND HIGH % 
 flag = 8; % specifies use of pH and ALK
 
-% d11Bsw low
-d11B_data_d11Bswlow = d11B_data;
-d11B_data_d11Bswlow = removevars(d11B_data_d11Bswlow,{'d11B_sw','calibration_intercept_sw','d11B_4','pH','pKb'});
-d11B_data_d11Bswlow.d11B_swlow = interp1(d11B_sw.age,d11B_sw.d11BswLow,d11B_data.age/1000);
-% adjust calibration
-d11B_data_d11Bswlow.calibration_intercept_swlow = d11B_data_d11Bswlow.calibration_intercept+(39.61-d11B_data_d11Bswlow.d11B_swlow).*(d11B_data_d11Bswlow.calibration_gradient-1);
-% calculate borate
-d11B_data_d11Bswlow.d11B_4_swlow = (d11B_data_d11Bswlow.d11B-d11B_data_d11Bswlow.calibration_intercept_swlow)./d11B_data_d11Bswlow.calibration_gradient;
+% Fill in calibration c and m
+calibrations = readtable(boron_data_path,'Sheet','calibrations','Format','Auto');
+% Preallocate space
+d11B_data_d11Bsw_low.calibration_gradient = zeros(height(d11B_data_d11Bsw_low),1);
+d11B_data_d11Bsw_low.calibration_intercept = zeros(height(d11B_data_d11Bsw_low),1);
+for calibration_index = 1:height(calibrations)    
+    calibration_boolean = strcmp(d11B_data_d11Bsw_low.calibration,calibrations.name(calibration_index));
+    d11B_data_d11Bsw_low.calibration_gradient(calibration_boolean) = calibrations.m(calibration_index);
+    d11B_data_d11Bsw_low.calibration_intercept(calibration_boolean) = calibrations.c(calibration_index);
+end
+
+% Find d11B_sw for each sample
+d11B_data_d11Bsw_low.d11B_sw = interp1(d11B_sw.age,d11B_sw.d11Bsw_low,d11B_data_d11Bsw_low.age/1000);
+
+% Correct calibration for d11Bsw
+d11B_data_d11Bsw_low.calibration_intercept_sw = d11B_data_d11Bsw_low.calibration_intercept+(39.61-d11B_data_d11Bsw_low.d11B_sw).*(d11B_data_d11Bsw_low.calibration_gradient-1);
+d11B_data_d11Bsw_low.d11B_4 = (d11B_data_d11Bsw_low.d11B-d11B_data_d11Bsw_low.calibration_intercept_sw)./d11B_data_d11Bsw_low.calibration_gradient;
+
+% Set all salinities to 35 
+d11B_data_d11Bsw_low.salinity = ones(size(d11B_data_d11Bsw_low,1),1).*35;
+% Set all depths to 0m
+d11B_data_d11Bsw_low.depth = zeros(size(d11B_data_d11Bsw_low,1),1);
+
 % calculate pH
-[d11B_data_d11Bswlow.pH_swlow,d11B_data_d11Bswlow.pKb] = d11BtopH(d11B_data_d11Bswlow.d11B_4_swlow,d11B_data_d11Bswlow.temperature,d11B_data_d11Bswlow.salinity,d11B_data_d11Bswlow.depth,d11B_data_d11Bswlow.d11B_swlow,d11B_data_d11Bswlow.magnesium_seawater,d11B_data_d11Bswlow.calcium_seawater,myami);
+[d11B_data_d11Bsw_low.pH,d11B_data_d11Bsw_low.pKb] = d11BtopH(d11B_data_d11Bsw_low.d11B_4,d11B_data_d11Bsw_low.temperature,d11B_data_d11Bsw_low.salinity,d11B_data_d11Bsw_low.depth,d11B_data_d11Bsw_low.d11B_sw,d11B_data_d11Bsw_low.magnesium_seawater,d11B_data_d11Bsw_low.calcium_seawater,myami);
+
 % calculate CO2 from this pH and alkalinity
-d11B_data_d11Bswlow.alkalinity = repelem(2330,height(d11B_data_d11Bswlow))'; % Central alkalinity of 2330
-[~,d11Bswlow_results] = fncsysKMgCaV2(flag,d11B_data_d11Bswlow.temperature,d11B_data_d11Bswlow.salinity,d11B_data_d11Bswlow.depth,d11B_data_d11Bswlow.pH_swlow,NaN,NaN,NaN,d11B_data_d11Bswlow.alkalinity,NaN,NaN,d11B_data_d11Bswlow.magnesium_seawater,d11B_data_d11Bswlow.calcium_seawater,myami);
-d11B_d11Bswlow_results = d11B_data_d11Bswlow;
+d11B_data_d11Bsw_low.alkalinity = repelem(2330,height(d11B_data_d11Bsw_low))'; % Central alkalinity of 2330
+[~,d11Bsw_low_results] = fncsysKMgCaV2(flag,d11B_data_d11Bsw_low.temperature,d11B_data_d11Bsw_low.salinity,d11B_data_d11Bsw_low.depth,d11B_data_d11Bsw_low.pH,NaN,NaN,NaN,d11B_data_d11Bsw_low.alkalinity,NaN,NaN,d11B_data_d11Bsw_low.magnesium_seawater,d11B_data_d11Bsw_low.calcium_seawater,myami);
+d11B_d11Bsw_low_results = d11B_data_d11Bsw_low;
 
 for output_index = 1:numel(output_to_save)
-    d11B_d11Bswlow_results.(output_to_save_as(output_index)) = d11Bswlow_results.(output_to_save(output_index));
+    d11B_d11Bsw_low_results.(output_to_save_as(output_index)) = d11Bsw_low_results.(output_to_save(output_index));
 end
-d11B_d11Bswlow_results.pH_swlow = d11B_d11Bswlow_results.pH;
-d11B_d11Bswlow_results = removevars(d11B_d11Bswlow_results,{'pH'});
+d11B_d11Bsw_low_results.pH_swlow = d11B_d11Bsw_low_results.pH;
+d11B_d11Bsw_low_results = removevars(d11B_d11Bsw_low_results,{'pH'});
+flag = 8; % specifies use of pH and ALK
 
-% d11Bsw high
-d11B_data_d11Bswhigh = d11B_data;
-d11B_data_d11Bswhigh = removevars(d11B_data_d11Bswhigh,{'d11B_sw','calibration_intercept_sw','d11B_4','pH','pKb'});
-d11B_data_d11Bswhigh.d11B_swhigh = interp1(d11B_sw.age,d11B_sw.d11BswHigh,d11B_data.age/1000);
-% adjust calibration
-d11B_data_d11Bswhigh.calibration_intercept_swhigh = d11B_data_d11Bswhigh.calibration_intercept+(39.61-d11B_data_d11Bswhigh.d11B_swhigh).*(d11B_data_d11Bswhigh.calibration_gradient-1);
-% calculate borate
-d11B_data_d11Bswhigh.d11B_4_swhigh = (d11B_data_d11Bswhigh.d11B-d11B_data_d11Bswhigh.calibration_intercept_swhigh)./d11B_data_d11Bswhigh.calibration_gradient;
+% Fill in calibration c and m
+calibrations = readtable(boron_data_path,'Sheet','calibrations','Format','Auto');
+% Preallocate space
+d11B_data_d11Bsw_high.calibration_gradient = zeros(height(d11B_data_d11Bsw_high),1);
+d11B_data_d11Bsw_high.calibration_intercept = zeros(height(d11B_data_d11Bsw_high),1);
+for calibration_index = 1:height(calibrations)    
+    calibration_boolean = strcmp(d11B_data_d11Bsw_high.calibration,calibrations.name(calibration_index));
+    d11B_data_d11Bsw_high.calibration_gradient(calibration_boolean) = calibrations.m(calibration_index);
+    d11B_data_d11Bsw_high.calibration_intercept(calibration_boolean) = calibrations.c(calibration_index);
+end
+
+% Find d11B_sw for each sample
+d11B_data_d11Bsw_high.d11B_sw = interp1(d11B_sw.age,d11B_sw.d11Bsw_high,d11B_data_d11Bsw_high.age/1000);
+
+% Correct calibration for d11Bsw
+d11B_data_d11Bsw_high.calibration_intercept_sw = d11B_data_d11Bsw_high.calibration_intercept+(39.61-d11B_data_d11Bsw_high.d11B_sw).*(d11B_data_d11Bsw_high.calibration_gradient-1);
+d11B_data_d11Bsw_high.d11B_4 = (d11B_data_d11Bsw_high.d11B-d11B_data_d11Bsw_high.calibration_intercept_sw)./d11B_data_d11Bsw_high.calibration_gradient;
+
+% Set all salinities to 35 
+d11B_data_d11Bsw_high.salinity = ones(size(d11B_data_d11Bsw_high,1),1).*35;
+% Set all depths to 0m
+d11B_data_d11Bsw_high.depth = zeros(size(d11B_data_d11Bsw_high,1),1);
+
 % calculate pH
-[d11B_data_d11Bswhigh.pH_swhigh,d11B_data_d11Bswhigh.pKb] = d11BtopH(d11B_data_d11Bswhigh.d11B_4_swhigh,d11B_data_d11Bswhigh.temperature,d11B_data_d11Bswhigh.salinity,d11B_data_d11Bswhigh.depth,d11B_data_d11Bswhigh.d11B_swhigh,d11B_data_d11Bswhigh.magnesium_seawater,d11B_data_d11Bswhigh.calcium_seawater,myami);
+[d11B_data_d11Bsw_high.pH,d11B_data_d11Bsw_high.pKb] = d11BtopH(d11B_data_d11Bsw_high.d11B_4,d11B_data_d11Bsw_high.temperature,d11B_data_d11Bsw_high.salinity,d11B_data_d11Bsw_high.depth,d11B_data_d11Bsw_high.d11B_sw,d11B_data_d11Bsw_high.magnesium_seawater,d11B_data_d11Bsw_high.calcium_seawater,myami);
+
 % calculate CO2 from this pH and alkalinity
-d11B_data_d11Bswhigh.alkalinity = repelem(2330,height(d11B_data_d11Bswhigh))'; % Central alkalinity of 2330
-[~,d11Bswhigh_results] = fncsysKMgCaV2(flag,d11B_data_d11Bswhigh.temperature,d11B_data_d11Bswhigh.salinity,d11B_data_d11Bswhigh.depth,d11B_data_d11Bswhigh.pH_swhigh,NaN,NaN,NaN,d11B_data_d11Bswhigh.alkalinity,NaN,NaN,d11B_data_d11Bswhigh.magnesium_seawater,d11B_data_d11Bswhigh.calcium_seawater,myami);
-d11B_d11Bswhigh_results = d11B_data_d11Bswhigh;
+d11B_data_d11Bsw_high.alkalinity = repelem(2330,height(d11B_data_d11Bsw_high))'; % Central alkalinity of 2330
+[~,d11Bsw_high_results] = fncsysKMgCaV2(flag,d11B_data_d11Bsw_high.temperature,d11B_data_d11Bsw_high.salinity,d11B_data_d11Bsw_high.depth,d11B_data_d11Bsw_high.pH,NaN,NaN,NaN,d11B_data_d11Bsw_high.alkalinity,NaN,NaN,d11B_data_d11Bsw_high.magnesium_seawater,d11B_data_d11Bsw_high.calcium_seawater,myami);
+d11B_d11Bsw_high_results = d11B_data_d11Bsw_high;
 
 for output_index = 1:numel(output_to_save)
-    d11B_d11Bswhigh_results.(output_to_save_as(output_index)) = d11Bswhigh_results.(output_to_save(output_index));
+    d11B_d11Bsw_high_results.(output_to_save_as(output_index)) = d11Bsw_high_results.(output_to_save(output_index));
 end
-d11B_d11Bswhigh_results.pH_swlow = d11B_d11Bswhigh_results.pH;
-d11B_d11Bswhigh_results = removevars(d11B_d11Bswhigh_results,{'pH'});
-
+d11B_d11Bsw_high_results.pH_swhigh = d11B_d11Bsw_high_results.pH;
+d11B_d11Bsw_high_results = removevars(d11B_d11Bsw_high_results,{'pH'});
 
 %% CONSTANT DIC % 
 flag = 9; % specifies use of pH and DIC
@@ -162,7 +197,6 @@ d11B_dic_results = d11B_data_dic;
 for output_index = 1:numel(output_to_save)
     d11B_dic_results.(output_to_save_as(output_index)) = dic_results.(output_to_save(output_index));
 end
-
 
 %% CONSTANT OMEGA %
 % get Kspc for this interval - flag and alk doesn't matter, just want Kspc
@@ -207,7 +241,6 @@ end
 omega_results{1}.omega_error = ((d11B_data_omega_ca_low.calcium_seawater./1000).*omega_results{1}.CO3)./(omega_results{1}.Kspc*10^6); %umol/kg
 omega_results{3}.omega_error = ((d11B_data_omega_ca_high.calcium_seawater./1000).*omega_results{3}.CO3)./(omega_results{3}.Kspc*10^6); %umol/kg
 
-
 %% CCD-based CO3 - ZT19
 % use version scaled to modern CO3 of 275 and interpolate to find values at
 % the ages we have
@@ -221,7 +254,6 @@ d11B_ccd_results = d11B_data_CCD;
 for output_index = 1:numel(output_to_save)
     d11B_ccd_results.(output_to_save_as(output_index)) = ccd_results.(output_to_save(output_index));
 end
-
 
 %% re-calculate CO2 system w Ep smooth
 % smooth alkenone CO2 
@@ -242,7 +274,7 @@ for output_index = 1:numel(output_to_save)
 end
 
 %% correct ODP 999 disequilibrium for all treatments
-all_results = [d11B_alkalinity_results,{d11B_d11Bswlow_results},{d11B_d11Bswhigh_results},{d11B_dic_results},d11B_omega_results(:)',{d11B_ccd_results},{d11B_ep_results}];
+all_results = [d11B_alkalinity_results,{d11B_d11Bsw_low_results},{d11B_d11Bsw_high_results},{d11B_dic_results},d11B_omega_results(:)',{d11B_ccd_results},{d11B_ep_results}];
 for result_index = 1:numel(all_results)
     result = all_results(result_index);
     
@@ -256,7 +288,7 @@ for result_index = 1:numel(all_results)
     all_results(result_index) = result;
 end
 d11B_alkalinity_results = all_results(1:3);
-d11B_d11Bswlow_results = all_results{4};
+d11B_d11Bsw_low_results = all_results{4};
 d11B_d11Bswhigh_results = all_results{5};
 d11B_dic_results = all_results{6};
 d11B_omega_results = reshape(all_results(7:15),3,3);
@@ -271,8 +303,8 @@ writetable(d11B_alkalinity_results{2},output_filename,'Sheet',"alkalinity");
 writetable(d11B_alkalinity_results{1},output_filename,'Sheet',"alkalinity_low");
 writetable(d11B_alkalinity_results{3},output_filename,'Sheet',"alkalinity_high");
 
-writetable(d11B_d11Bswlow_results,output_filename,'Sheet',"alkalinity_d11Bswlow");
-writetable(d11B_d11Bswhigh_results,output_filename,'Sheet',"alkalinity_d11Bswhigh");
+writetable(d11B_d11Bsw_low_results,output_filename,'Sheet',"alkalinity_d11Bsw_low");
+writetable(d11B_d11Bsw_high_results,output_filename,'Sheet',"alkalinity_d11Bsw_high");
 
 writetable(d11B_dic_results,output_filename,'Sheet',"dic");
 
