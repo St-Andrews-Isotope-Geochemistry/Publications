@@ -1,9 +1,11 @@
 % Load in data
-westerhold2020 = readtable('./../../Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
+root_directory = "./../../";
+
+westerhold2020 = readtable(root_directory+"Data/Westerhold_2020_d18O.xlsx",'Sheet','Matlab','Format','Auto');
 
 co2_sheet_names = ["alkalinity"];
 for sheet_index = 1:numel(co2_sheet_names)
-    co2_data{sheet_index} = readtable("./../../Data/Rae_2021_Boron_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
+    co2_data{sheet_index} = readtable(root_directory+"Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 co2 = co2_data{1}.xco2;
 age = co2_data{1}.age/1000;
@@ -193,8 +195,8 @@ bottom_margin = 0.1*screen_size(4);
 set(gcf,'Position',[left_margin,bottom_margin,figure_width,figure_height]);
 
 %% Saving
-exportgraphics(gcf,"./../../Figures/Cenozoic_CO2_dTemperature.png","Resolution",600);
-exportgraphics(gcf,"./../../Figures/Cenozoic_CO2_dTemperature.pdf");
+exportgraphics(gcf,root_directory+"Figures/Cenozoic_CO2_dTemperature.png","Resolution",600);
+exportgraphics(gcf,root_directory+"Figures/Cenozoic_CO2_dTemperature.pdf");
 
 %%
 function output_co2 = lookupCO2(age_bins,co2_bins,age_lookup)

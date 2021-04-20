@@ -1,24 +1,23 @@
-% plot Cenozoic d11B data
+%% Plot Cenozoic CO2 alongside ice core records and modern CO2 with projections
 %% Load the data
+root_directory = "./../../";
+
 co2_sheet_names = ["alkalinity_low","alkalinity","alkalinity_high"];
 for sheet_index = 1:numel(co2_sheet_names)
-    co2_data{sheet_index} = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
+    co2_data{sheet_index} = readtable(root_directory+"/Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 
 % Alkenone Ep
 % Anchored approach
-Alk_anch = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
-Alk_anch = sortrows(Alk_anch,'age');
+alkenones_anchored = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','anchored');
 % Diffusive approach
-Alk_diff = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','diffusive');
-Alk_diff = sortrows(Alk_diff,'age');
+alkenones_diffusive = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','diffusive');
 
-ice_data = readtable('./../../Data/Bereiter_2015');
+ice_data = readtable(root_directory+"/Data/Bereiter_2015");
 
-% load ./../../Data/SSPs.mat
-SSP_data = readtable('./../../Data/SSPs.xlsx');
-law_CO2 = readtable('./../../Data/Recent_CO2.xlsx','sheet','Law_smooth');
-mauna_loa_CO2 = readtable('./../../Data/Recent_CO2.xlsx','sheet','MaunaLoaAnnual');
+SSP_data = readtable(root_directory+"/Data/SSPs.xlsx");
+law_CO2 = readtable(root_directory+"/Data/Recent_CO2.xlsx",'sheet','Law_smooth');
+mauna_loa_CO2 = readtable(root_directory+"/Data/Recent_CO2.xlsx",'sheet','MaunaLoaAnnual');
 
 %% Analyse the data
 % Smoothing CO2
@@ -27,9 +26,12 @@ for co2_index = 1:numel(co2_data)
     co2_smooth{co2_index} = smooth(co2_data{co2_index}.age/1000,co2_data{co2_index}.xco2,smoothing);
 end
 
-% alkenone comp
-ep_age = [Alk_anch.age(Alk_anch.age/1000<23); Alk_diff.age(Alk_diff.age/1000>23)];
-ep_co2 = [Alk_anch.co2(Alk_anch.age/1000<23); Alk_diff.co2(Alk_diff.age/1000>23)];
+% Alkenones
+alkenones_anchored = sortrows(alkenones_anchored,'age');
+alkenones_diffusive = sortrows(alkenones_diffusive,'age');
+
+ep_age = [alkenones_anchored.age(alkenones_anchored.age/1000<23); alkenones_diffusive.age(alkenones_diffusive.age/1000>23)];
+ep_co2 = [alkenones_anchored.co2(alkenones_anchored.age/1000<23); alkenones_diffusive.co2(alkenones_diffusive.age/1000>23)];
 ep_combined = table(ep_age,ep_co2);
 
 % Calculate SSP_data age
@@ -57,8 +59,8 @@ current_plot_index = 1;
 hold(plot_handles(current_plot_index),'on');
 set(plot_handles(current_plot_index),'Xlim',[1,70]);
 
-plot(Alk_anch.age/1000,Alk_anch.co2_84pc,'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',ep_size,'Parent',plot_handles(current_plot_index))
-plot(Alk_diff.age/1000,Alk_diff.co2,'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',ep_size,'Parent',plot_handles(current_plot_index))
+plot(alkenones_anchored.age/1000,alkenones_anchored.co2_84pc,'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',ep_size,'Parent',plot_handles(current_plot_index))
+plot(alkenones_diffusive.age/1000,alkenones_diffusive.co2,'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',ep_size,'Parent',plot_handles(current_plot_index))
 
 % Boron data
 plot(co2_data{2}.age/1000,co2_data{2}.xco2,'o','MarkerEdgeColor',rgb('DarkBlue'),'MarkerFaceColor','none','MarkerSize',6,'Parent',plot_handles(current_plot_index))
@@ -132,5 +134,5 @@ bottom_margin = 0.1*screen_size(4);
 set(gcf, 'Position',[left_margin,bottom_margin,figure_width,figure_height]);
 
 %% Saving
-exportgraphics(gcf,"./Figures/Cenozoic_CO2_SSPs.png","Resolution",600);
-exportgraphics(gcf,"./Figures/Cenozoic_CO2_SSPs.pdf");
+exportgraphics(gcf,root_directory+"/Figures/Cenozoic_CO2_SSPs.png","Resolution",600);
+exportgraphics(gcf,root_directory+"/Figures/Cenozoic_CO2_SSPs.pdf");

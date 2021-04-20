@@ -1,21 +1,23 @@
 % Plot Cenozoic temperature, sea level and CO2 data
 %% Load the data
-westerhold2020 = readtable('./../../Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
+root_directory = "./../../";
 
-sea_level = readtable('./../../Data/Miller_2020_SeaLevel.xlsx','sheet','data');
-sea_level_smooth = readtable('./../../Data/Miller_2020_SeaLevel.xlsx','sheet','smooth');
+westerhold2020 = readtable(root_directory+"/Data/Westerhold_2020_d18O.xlsx",'Sheet','Matlab','Format','Auto');
+
+sea_level = readtable(root_directory+"/Data/Miller_2020_SeaLevel.xlsx",'sheet','data');
+sea_level_smooth = readtable(root_directory+"/Data/Miller_2020_SeaLevel.xlsx",'sheet','smooth');
 
 % Alkenone Ep
 % Anchored approach
-Alk_anch = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
+alkenones_anchored = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','anchored');
 % Diffusive approach
-Alk_diff = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','diffusive');
+alkenones_diffusive = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','diffusive');
 
 % CO2
 co2_sheet_names = ["alkalinity_low","alkalinity","alkalinity_high"];
 co2_data = cell(numel(co2_sheet_names),1);
 for sheet_index = 1:numel(co2_sheet_names)
-    co2_data{sheet_index} = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
+    co2_data{sheet_index} = readtable(root_directory+"/Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 
 no_ice_hansen_calibration = @(d18O) -4*d18O+12;
@@ -28,8 +30,8 @@ westerhold2020.smooth = smooth(westerhold2020.age,westerhold2020.d18O_corrected,
 westerhold2020.surface_ocean_temperature_smooth = smooth(westerhold2020.age,westerhold2020.surface_ocean_temperature,50,'loess');
 
 % Alkenones
-Alk_anch = sortrows(Alk_anch,'age');
-Alk_diff = sortrows(Alk_diff,'age');
+alkenones_anchored = sortrows(alkenones_anchored,'age');
+alkenones_diffusive = sortrows(alkenones_diffusive,'age');
 
 % Smoothing CO2
 smoothing = 30;
@@ -44,7 +46,7 @@ age_ticks = 0:10:70;
 % Normal - time going right to left or
 % Reverse - time going left to right
 % age_direction = 'normal';
-age_direction = 'reverse';
+age_direction = 'Reverse';
 
 clf
 figure_handle = figure(1);
@@ -67,8 +69,8 @@ axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,34])
 current_plot_index = number_of_plots-1;
 hold(plot_handles(current_plot_index),'on')
 
-plot(Alk_anch.age/1000, log2(Alk_anch.co2),'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
-plot(Alk_diff.age/1000, log2(Alk_diff.co2_84pc),'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
+plot(alkenones_anchored.age/1000, log2(alkenones_anchored.co2),'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
+plot(alkenones_diffusive.age/1000, log2(alkenones_diffusive.co2_84pc),'+','MarkerEdgeColor',rgb('SteelBlue'),'MarkerFaceColor','none','MarkerSize',5,'Parent',plot_handles(current_plot_index))
 % plot(ep_age/1000,log2(ep_co2_smooth),'--','Color',rgb('SteelBlue'),'LineWidth',1,'Parent',plot_handles(current_plot_index))
 
 
@@ -80,7 +82,7 @@ plot(co2_data{1}.age/1000,log2(co2_smooth{1}),':','Color',rgb('DarkBlue'),'LineW
 plot(co2_data{3}.age/1000,log2(co2_smooth{3}),':','Color',rgb('DarkBlue'),'LineWidth',1,'Parent',plot_handles(current_plot_index));
 
 
-ylabel(plot_handles(current_plot_index),'Atmospheric CO_2 (ppmv)')
+ylabel(plot_handles(current_plot_index),'Atmospheric CO_2 (ppm)')
 
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),log2([180,2200])])
 
@@ -140,5 +142,5 @@ bottom_margin = 0.1*screen_size(4);
 set(gcf,'Position',[left_margin,bottom_margin,figure_width,figure_height]);
 
 %% Saving
-exportgraphics(gcf,"./Figures/Cenozoic_d18OSurfaceTemperature_CO2.png","Resolution",600);
-exportgraphics(gcf,"./Figures/Cenozoic_d18OSurfaceTemperature_CO2.pdf");
+exportgraphics(gcf,root_directory+"/Figures/Cenozoic_d18OSurfaceTemperature_CO2.png","Resolution",600);
+exportgraphics(gcf,root_directory+"/Figures/Cenozoic_d18OSurfaceTemperature_CO2.pdf");

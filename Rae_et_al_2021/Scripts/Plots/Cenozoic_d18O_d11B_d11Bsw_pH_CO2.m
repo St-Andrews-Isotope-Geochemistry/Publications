@@ -1,27 +1,29 @@
 % Plot of Cenozoic d18O, d11B, d11B_sw, pH and Atmospheric CO2
 %% Load in the data
+root_directory = "./../../";
+
 % d18O
-westerhold2020 = readtable('./../../Data/Westerhold_2020_d18O.xlsx','Sheet','Matlab','Format','Auto');
+westerhold2020 = readtable(root_directory+"/Data/Westerhold_2020_d18O.xlsx",'Sheet','Matlab','Format','Auto');
 
 % d11B_sw
-paris2010 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Paris2010'); % halites - no outliers removed
-raitzsch2013 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Raitzsch2013'); % Raitzsch & Honisch version using Klochko
-lemarchand2000 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Lemarchand2000'); % Lemarchand cnst rivers version
-anagnostou2016 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Anagnostou2016'); % Eleni
-greenop2017 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Greenop2017_boxes'); % Greenop - plot boxes as in Figure 10
-greenop2017_smooth = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Greenop2017_smooth');
-henehan2019 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Henehan2019updated'); % Henehan 2019
-henehan2020 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Henehan2020'); % Henehan 2020
-rae2021 = readtable('./../../Data/d11Bsw_compilation.xlsx','sheet','Rae2021Comp');
+paris2010 = readtable(root_directory+"/Data/d11Bsw_compilation.xlsx",'sheet','Paris2010'); % halites - no outliers removed
+raitzsch2013 = readtable(root_directory+"/Data/d11Bsw_compilation.xlsx",'sheet','Raitzsch2013'); % Raitzsch & Honisch version using Klochko
+lemarchand2000 = readtable(root_directory+"/Data/d11Bsw_compilation.xlsx",'sheet','Lemarchand2000'); % Lemarchand cnst rivers version
+anagnostou2016 = readtable(root_directory+"/Data/d11Bsw_compilation.xlsx",'sheet','Anagnostou2016'); % Eleni
+greenop2017 = readtable(root_directory+"/Data/d11Bsw_compilation.xlsx",'sheet','Greenop2017_boxes'); % Greenop - plot boxes as in Figure 10
+greenop2017_smooth = readtable(root_directory+"/Data/d11Bsw_compilation.xlsx",'sheet','Greenop2017_smooth');
+henehan2019 = readtable(root_directory+"/Data/d11Bsw_compilation.xlsx",'sheet','Henehan2019updated'); % Henehan 2019
+henehan2020 = readtable(root_directory+"/Data/d11Bsw_compilation.xlsx",'sheet','Henehan2020'); % Henehan 2020
+rae2021 = readtable(root_directory+"/Data/d11Bsw_compilation.xlsx",'sheet','Rae2021Comp');
 
 % pH
-d11B_pH = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet","d11B_data");
+d11B_pH = readtable(root_directory+"/Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet","d11B_data");
 
 % CO2
 co2_sheet_names = ["ccd","Omega65","Omega5","Omega8","dic","alkalinity_high","alkalinity_low","alkalinity","alkalinity_d11Bswlow","alkalinity_d11Bswhigh"];
 
 for sheet_index = 1:numel(co2_sheet_names)
-    co2_data{sheet_index} = readtable("./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
+    co2_data{sheet_index} = readtable(root_directory+"/Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 
 %% Analyse the data
@@ -42,7 +44,7 @@ age_direction = 'reverse';
 clf
 figure_handle = figure(1);
 figure_handle.Color = "White";
-number_of_plots = 5; %his is the number of axes you would like
+number_of_plots = 5; % This is the number of axes you would like
 plot_handles = stackplot(number_of_plots,"figure_handle",figure_handle);
 
 
@@ -198,5 +200,5 @@ bottom_margin = 0.1*screen_size(4);
 set(gcf,'Position',[left_margin,bottom_margin,figure_width,figure_height]);
 
 %% Saving
-exportgraphics(gcf,"./Figures/Cenozoic_d18O_d11B_d11Bsw_pH_CO2.png","Resolution",600);
-exportgraphics(gcf,"./Figures/Cenozoic_d18O_d11B_d11Bsw_pH_CO2.pdf");
+exportgraphics(gcf,root_directory+"/Figures/Cenozoic_d18O_d11B_d11Bsw_pH_CO2.png","Resolution",600);
+exportgraphics(gcf,root_directory+"/Figures/Cenozoic_d18O_d11B_d11Bsw_pH_CO2.pdf");
