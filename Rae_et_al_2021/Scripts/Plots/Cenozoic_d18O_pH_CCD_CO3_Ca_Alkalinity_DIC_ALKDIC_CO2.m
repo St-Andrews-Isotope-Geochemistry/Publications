@@ -45,13 +45,13 @@ plot_handles = stackplot(number_of_plots,"figure_handle",figure_handle);
 
 %% d18O
 current_plot_index = number_of_plots;
-hold(plot_handles(current_plot_index),'on')
+hold(plot_handles(current_plot_index),'On')
 
 plot(westerhold2020.age,westerhold2020.d18O_corrected,'x','Color',rgb('LightGray'),'MarkerSize',2,'Parent',plot_handles(current_plot_index))
 plot(westerhold2020.age,westerhold2020.d18O_smooth,'-','Color',rgb('Black'),'LineWidth',1,'Parent',plot_handles(current_plot_index))
 
-set(plot_handles(current_plot_index),'YDir','reverse')
-ylabel(plot_handles(current_plot_index),['\delta^{18}O (' char(8240) ')'])
+set(plot_handles(current_plot_index),'YDir','Reverse')
+ylabel(plot_handles(current_plot_index),join(["\delta^{18}O (",char(8240),")"]))
 axis(plot_handles(current_plot_index),[age_limits(1) age_limits(2) -1.5 5.5])
 
 for epoch_index = 1:height(Epochs)
@@ -60,17 +60,17 @@ end
 
 %% pH 
 current_plot_index = current_plot_index-1; 
-hold(plot_handles(current_plot_index),'on')
+hold(plot_handles(current_plot_index),'On')
 
 plot(d11B_pH.age/1000,d11B_pH.pH,'o','MarkerEdgeColor',rgb("Purple"),'MarkerFaceColor','None','MarkerSize',4,'Parent',plot_handles(current_plot_index))
 
 ylabel(plot_handles(current_plot_index),'pH')
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,inf])
-set(plot_handles(current_plot_index),'YDir','reverse')
+set(plot_handles(current_plot_index),'YDir','Reverse')
 
 %% CCD
 current_plot_index = number_of_plots-2;
-hold(plot_handles(current_plot_index),'on');
+hold(plot_handles(current_plot_index),'On');
 
 % Palike equatorial CCD
 load ./../../Data/Palike2012.mat
@@ -90,11 +90,11 @@ plot(TZ04.age,TZ04.CCDdepth,'-','Color',rgb('Chocolate'),'LineWidth',1,'Parent',
 
 ylabel(plot_handles(current_plot_index),'CCD (km)')
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,inf])
-set(plot_handles(current_plot_index),'YDir','reverse')
+set(plot_handles(current_plot_index),'YDir','Reverse')
 
 %% Ca & Mg
 current_plot_index = number_of_plots-5;
-hold(plot_handles(current_plot_index),'on');
+hold(plot_handles(current_plot_index),'On');
 
 plot(mg_ca.age, mg_ca.Ca,'--','Color',rgb('LightGray'),'LineWidth',2,'Parent',plot_handles(current_plot_index))
 plot(mg_ca.age,mg_ca.Ca+mg_ca.Ca_up,':','Color',rgb('LightGray'),'LineWidth',2,'Parent',plot_handles(current_plot_index))
@@ -105,12 +105,12 @@ for mg_ca_index=1:height(mg_ca)
 end
 plot(mg_ca.age,mg_ca.Ca,'d','MarkerEdgeColor',rgb('Black'),'MarkerFaceColor',rgb('Grey'),'MarkerSize',8,'Parent',plot_handles(current_plot_index))
 
-ylabel(plot_handles(current_plot_index),{'[Ca^{2+}]','(mmol/kg)'});
+ylabel(plot_handles(current_plot_index),["[Ca^{2+}]","(mmol/kg)"]);
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),7,25])
 
 %% CONSTANT OMEGA %
 current_plot_index = number_of_plots-3;
-hold(plot_handles(current_plot_index),'on');
+hold(plot_handles(current_plot_index),'On');
 
 OmegaVals = [5, 8, 6.5];
 OmegaCols = {'Gray', 'Gray', 'DimGrey'};
@@ -130,7 +130,7 @@ ylabel(plot_handles(current_plot_index),"\Omega");
 
 % CO3
 current_plot_index = number_of_plots-4;
-hold(plot_handles(current_plot_index),'on');
+hold(plot_handles(current_plot_index),'On');
 
 co2_to_plot = [1,2,3,4,5,6,7,8,9,11,12];
 
@@ -141,7 +141,7 @@ ylabel(plot_handles(current_plot_index),["CO_3^{2-}","(\mumol/kg)"]);
 
 % Alkalinity
 current_plot_index = number_of_plots-6;
-hold(plot_handles(current_plot_index),'on');
+hold(plot_handles(current_plot_index),'On');
 
 co2_to_plot = [1,2,3,4,5,6,7,8,9,11,12];
 
@@ -152,7 +152,7 @@ ylabel(plot_handles(current_plot_index),["Alkalinity","(\mumol/kg)"]);
 
 % DIC
 current_plot_index = number_of_plots-7;
-hold(plot_handles(current_plot_index),'on');
+hold(plot_handles(current_plot_index),'On');
 
 co2_to_plot = [1,2,3,4,5,6,7,8,9,11,12];
 
@@ -163,7 +163,7 @@ ylabel(plot_handles(current_plot_index),["DIC","(\mumol/kg)"]);
 
 % ALK/DIC
 current_plot_index = number_of_plots-8;
-hold(plot_handles(current_plot_index),'on');
+hold(plot_handles(current_plot_index),'On');
 
 co2_to_plot = [1,2,3,4,5,6,7,8,9,11,12];
 
@@ -174,7 +174,7 @@ ylabel(plot_handles(current_plot_index),"ALK/DIC");
 
 % CO2
 current_plot_index = number_of_plots-9;
-hold(plot_handles(current_plot_index),'on');
+hold(plot_handles(current_plot_index),'On');
 
 co2_to_plot = [1,2,3,4,5,6,7,8,9,11,12];
 
@@ -184,31 +184,32 @@ end
 ylabel(plot_handles(current_plot_index),["Atmospheric CO_2","(ppm)"]);
 
 %% axes etc
-axpos = get(plot_handles(9),'Position');
-set(plot_handles(9), 'Position', [axpos(1) axpos(2)+0.01 axpos(3) axpos(4)+0.02])
-axpos = get(plot_handles(8),'Position');
-set(plot_handles(8), 'Position', [axpos(1) axpos(2)+0.04 axpos(3) axpos(4)])
-axpos = get(plot_handles(7),'Position');
-set(plot_handles(7), 'Position', [axpos(1) axpos(2)+0.06 axpos(3) axpos(4)])
-axpos = get(plot_handles(6),'Position');
-set(plot_handles(6), 'Position', [axpos(1) axpos(2)+0.03 axpos(3) axpos(4)+0.05])
-axpos = get(plot_handles(5),'Position');
-set(plot_handles(5), 'Position', [axpos(1) axpos(2)+0.06 axpos(3) axpos(4)])
-axpos = get(plot_handles(4),'Position');
-set(plot_handles(4), 'Position', [axpos(1) axpos(2)+0.04 axpos(3) axpos(4)+0.03])
-axpos = get(plot_handles(3),'Position');
-set(plot_handles(3), 'Position', [axpos(1) axpos(2)+0.02 axpos(3) axpos(4)+0.03])
-axpos = get(plot_handles(2),'Position');
-set(plot_handles(2), 'Position', [axpos(1) axpos(2)-0.04 axpos(3) axpos(4)+0.05])
-axpos = get(plot_handles(1),'Position');
-set(plot_handles(1), 'Position', [axpos(1) axpos(2)-0.05 axpos(3) axpos(4)+0.07])
+axis_position = get(plot_handles(9),'Position');
+set(plot_handles(9), 'Position', [axis_position(1),axis_position(2)+0.01,axis_position(3),axis_position(4)+0.02])
+axis_position = get(plot_handles(8),'Position');
+set(plot_handles(8), 'Position', [axis_position(1),axis_position(2)+0.04,axis_position(3),axis_position(4)])
+axis_position = get(plot_handles(7),'Position');
+set(plot_handles(7), 'Position', [axis_position(1),axis_position(2)+0.06,axis_position(3),axis_position(4)])
+axis_position = get(plot_handles(6),'Position');
+set(plot_handles(6), 'Position', [axis_position(1),axis_position(2)+0.03,axis_position(3),axis_position(4)+0.05])
+axis_position = get(plot_handles(5),'Position');
+set(plot_handles(5), 'Position', [axis_position(1),axis_position(2)+0.06,axis_position(3),axis_position(4)])
+axis_position = get(plot_handles(4),'Position');
+set(plot_handles(4), 'Position', [axis_position(1),axis_position(2)+0.04,axis_position(3),axis_position(4)+0.03])
+axis_position = get(plot_handles(3),'Position');
+set(plot_handles(3), 'Position', [axis_position(1),axis_position(2)+0.02,axis_position(3),axis_position(4)+0.03])
+axis_position = get(plot_handles(2),'Position');
+set(plot_handles(2), 'Position', [axis_position(1),axis_position(2)-0.04,axis_position(3),axis_position(4)+0.05])
+axis_position = get(plot_handles(1),'Position');
+set(plot_handles(1), 'Position', [axis_position(1),axis_position(2)-0.05,axis_position(3),axis_position(4)+0.07])
 
-set(plot_handles(number_of_plots-9),'YScale','log','YTick',100:100:3200,'YTickLabel',{'' '200' '' '400' '' '' '' '800' '' '' '' '' '' '' '' '1600' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '3200'})
+yticks = [200,400,800,1600,3200];
+set(plot_handles(number_of_plots-9),'YScale','Log','YTick',yticks,'YTickLabel',num2str(yticks'))
 
 set(plot_handles(1),'XTick',age_ticks)
 set(plot_handles(number_of_plots),'XTick',age_ticks)
 
-xlabel(plot_handles(1),'Age (Ma)')
+xlabel(plot_handles(1),"Age (Ma)")
 
 for plot_index = 1:number_of_plots
     set(plot_handles(plot_index),'XDir',age_direction,'TickDir','Out','XMinorTick','On','YMinorTick','On','FontSize',12)

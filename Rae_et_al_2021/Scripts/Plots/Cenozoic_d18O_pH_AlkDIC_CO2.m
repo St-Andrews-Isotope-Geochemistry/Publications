@@ -57,7 +57,7 @@ age_ticks = 0:10:70;
 % Normal - time going right to left or
 % Reverse - time going left to right
 % age_direction = 'normal';
-age_direction = 'reverse';
+age_direction = 'Reverse';
 
 clf
 figure_handle = figure(1);
@@ -73,7 +73,7 @@ plot(westerhold2020.age,westerhold2020.d18O_corrected,'x','Color',rgb('LightGray
 plot(westerhold2020.age,westerhold2020.d18O_smooth,'-','Color',rgb('Black'),'LineWidth',1,'Parent',plot_handles(current_plot_index))
 
 set(plot_handles(current_plot_index),'YDir','Reverse');
-ylabel(plot_handles(current_plot_index),['\delta^{18}O (' char(8240) ')']);
+ylabel(plot_handles(current_plot_index),join(["\delta^{18}O (",char(8240),")"]));
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-1.5,5.5]);
 
 for epoch_index = 1:height(Epochs)
@@ -86,7 +86,7 @@ hold(plot_handles(current_plot_index),'on');
 
 plot(co2_data{1}.age/1000,co2_data{1}.pH,'o','MarkerEdgeColor',rgb('Purple'),'MarkerSize',5,'Parent',plot_handles(current_plot_index))
 
-ylabel(plot_handles(current_plot_index),'pH')
+ylabel(plot_handles(current_plot_index),"pH")
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,inf])
 set(plot_handles(current_plot_index),'YDir','Reverse')
 
@@ -105,7 +105,7 @@ for co2_index = 1:numel(co2_to_plot)
 end
 
 set(plot_handles(current_plot_index),'YDir','Reverse')
-ylabel(plot_handles(current_plot_index),'ALK/DIC')
+ylabel(plot_handles(current_plot_index),"ALK/DIC")
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,inf])
 
 %% CO2
@@ -120,22 +120,22 @@ plot(test_temperature_25.age,test_temperature_25_results.XCO2,'o','MarkerEdgeCol
 plot(test_magnesium_55.age,test_magnesium_55_results.XCO2,'d','MarkerEdgeColor',rgb('Black'),'MarkerFaceColor','Green','MarkerSize',12,'Parent',plot_handles(1)); % now constant modern Mg 
 plot(test_ca_10.age,test_ca_10_results.XCO2,'d','MarkerEdgeColor',rgb('Black'),'MarkerFaceColor','Cyan','MarkerSize',12,'Parent',plot_handles(1)); % now constant modern Ca 
 
-ylabel(plot_handles(current_plot_index),'Atmospheric CO_2 (ppm)');
+ylabel(plot_handles(current_plot_index),"Atmospheric CO_2 (ppm)");
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,2200]);
 set(plot_handles(current_plot_index),'YScale','Log','YTick',100:100:4000,'YTickLabel',{'100' '200' '300' '400' '' '600' '' '800' '' '1000' '' '' '' '' '1500' '' '' '' '' '2000' '' '' '' '' '' '' '' '' '' '3000'  '' '' '' '' '' '' '' '' '' '4000' });
 
 
 %% Axis etc
 axpos = get(plot_handles(1),'Position');
-set(plot_handles(1), 'Position', [axpos(1),axpos(2),axpos(3),axpos(4)+0.06])
+set(plot_handles(1),'Position',[axpos(1),axpos(2),axpos(3),axpos(4)+0.06])
 axpos = get(plot_handles(2),'Position');
-set(plot_handles(2), 'Position', [axpos(1),axpos(2)+0.01,axpos(3),axpos(4)+0.04])
+set(plot_handles(2),'Position',[axpos(1),axpos(2)+0.01,axpos(3),axpos(4)+0.04])
 axpos = get(plot_handles(3),'Position');
-set(plot_handles(3), 'Position', [axpos(1),axpos(2),axpos(3),axpos(4)+0.04])
+set(plot_handles(3),'Position',[axpos(1),axpos(2),axpos(3),axpos(4)+0.04])
 
 set(plot_handles(1),'XTick',age_ticks);
 set(plot_handles(number_of_plots),'XTick',age_ticks);
-xlabel(plot_handles(1),'Age (Ma)');
+xlabel(plot_handles(1),"Age (Ma)");
 
 for plot_index = 1:number_of_plots
     set(plot_handles(plot_index),'XDir',age_direction,'TickDir','Out','XMinorTick','On','YMinorTick','On','FontSize',14)
@@ -154,7 +154,6 @@ screen_size = get(0,'ScreenSize');
 left_margin = 0.1*screen_size(3);
 bottom_margin = 0.1*screen_size(4);
 set(gcf,'Position',[left_margin,bottom_margin,figure_width,figure_height]);
-
 
 %% Saving
 exportgraphics(gcf,root_directory+"/Figures/Cenozoic_d18O_pH_AlkDIC_CO2.png","Resolution",600);

@@ -1,16 +1,19 @@
-% Load in data
+%% Plot Cenozoic CO2 and change in temperature 
+%% Load in data
 root_directory = "./../../";
 
-westerhold2020 = readtable(root_directory+"Data/Westerhold_2020_d18O.xlsx",'Sheet','Matlab','Format','Auto');
+% d18O
+westerhold2020 = readtable(root_directory+"/Data/Westerhold_2020_d18O.xlsx",'Sheet','Matlab','Format','Auto');
 
+% CO2
 co2_sheet_names = ["alkalinity"];
 for sheet_index = 1:numel(co2_sheet_names)
-    co2_data{sheet_index} = readtable(root_directory+"Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
+    co2_data{sheet_index} = readtable(root_directory+"/Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 co2 = co2_data{1}.xco2;
-age = co2_data{1}.age/1000;
+age = co2_data{1}.age/1000; % ka to Ma
 
-%%
+%% Bin the data
 bin_width = 0.01;
 bin_edges = 0:bin_width:100;
 bins_midpoints = bin_edges(1:end-1)+bin_width;
@@ -77,7 +80,7 @@ anag20_3.age = [56.2,55.8];
 anag20_3.temperature = 17.6;
 anag20_3.co2 = 1750;
 
-%%
+% Get CO2
 zhu_2019.co2 = lookupCO2(bin_edges,co2_binned,zhu_2019.age);
 tierney_2019.co2 = lookupCO2(bin_edges,co2_binned,tierney_2019.age);
 mcclymont2020.co2 = lookupCO2(bin_edges,co2_binned,mcclymont2020.age);
@@ -85,35 +88,28 @@ evans2018.co2 = lookupCO2(bin_edges,co2_binned,evans2018.age);
 delavega.co2 = lookupCO2(bin_edges,co2_binned,delavega.age);
 anag20_1.co2 = lookupCO2(bin_edges,co2_binned,anag20_1.age);
 anag20_2.co2 = lookupCO2(bin_edges,co2_binned,anag20_2.age);
-% anag20_3.co2 = lookupCO2(bin_edges,co2_binned,anag20_3.age);
 
-
-%%
-%
+%% Plot
 figure(1);
 clf
 
 subplot_1 = subplot(1,2,1);
 scatter(log2(co2_binned),d18O_binned-modern_d18O,8,bins_midpoints,"filled");
 
-set(gca,'TickDir','Out');
-axis square
+x_ticks = log2(280*2.^(-1:4));
+x_tick_labels = string(280*2.^(-1:4));
 
 xlabel("Atmospheric CO_2 (ppmv)");
 ylabel(['Benthic \delta^{18}O (' char(8240) ')']);
-ylim([-2.5, 6]);
 
-axis = gca;
-axis.XAxis.MinorTickValues = log2(140:70:4480);
-set(gca,'XMinorTick','On','YMinorTick','On');
-
-set(gca,'TickLength',[0.02,0.01])
 xlim(log2([140,3000]));
+ylim([-2.5,6]);
 
-x_ticks = log2(280*2.^(-1:4));
-x_tick_labels = string(280*2.^(-1:4));
-set(gca,'XTick',x_ticks,'XTickLabels',x_tick_labels);
-set(gca,'YDir','Reverse');
+current_axis = gca;
+current_axis.XAxis.MinorTickValues = log2(140:70:4480);
+set(gca,'XMinorTick','On','YMinorTick','On','TickDir','Out','TickLength',[0.02,0.01],'XTick',x_ticks,'XTickLabels',x_tick_labels,'YDir','Reverse');
+axis square
+
 
 subplot_2 = subplot(1,2,2);
 hold on
@@ -137,6 +133,7 @@ text(log2(anag20_2.co2+40),anag20_2.temperature+0.6,"^e",'FontWeight','Bold');
 scatter(log2(anag20_3.co2),anag20_3.temperature,80,'k','MarkerEdgeColor','k','MarkerFaceColor',rgb("grey"));
 text(log2(anag20_3.co2-30),anag20_3.temperature+0.8,"^f",'FontWeight','Bold');
 
+% Other estimates - labels
 text(log2(160),24,"a - Tierney, 2019");
 text(log2(160),22,"b - de la Vega, 2020");
 text(log2(160),20,"c - McClymont, 2020");
@@ -144,35 +141,30 @@ text(log2(160),18,"d - Inglis, LatePal");
 text(log2(160),16,"e - Inglis, EECO");
 text(log2(160),14,"f - Inglis, PETM");
 
-
+% Add the tiepoint
 plot(log2(tiepoint(1)),tiepoint(2)-modern_t,'sk','MarkerSize',8,'MarkerFaceColor','k');
 
 xlabel("Atmospheric CO_2 (ppmv)");
 ylabel("\DeltaTemperature (^{\circ}C)");
-axis = gca;
-axis.XAxis.MinorTickValues = log2(140:70:4480);
-set(gca,'XMinorTick','On','YMinorTick','On');
 
-set(gca,'TickDir','Out');
-set(gca,'TickLength',[0.02,0.01])
-set(gca,'XTick',x_ticks,'XTickLabels',x_tick_labels);
-
-ylim([-10,25]);
 xlim(log2([140,3000]));
+ylim([-10,25]);
 
+current_axis = gca;
+current_axis.XAxis.MinorTickValues = log2(140:70:4480);
+set(gca,'XMinorTick','On','YMinorTick','On','TickDir','Out','TickLength',[0.02,0.01],'XTick',x_ticks,'XTickLabels',x_tick_labels);
 axis square
+
+% Keep original sizes for scaling
 original_sizes = [get(subplot_1,'Position');get(subplot_2,'Position')];
 
+% Colorbar
 colour_handle = colorbar;
 ylabel(colour_handle,"Age (Ma)","Rotation",-90, 'VerticalAlignment','bottom', 'HorizontalAlignment','center');
-set(colour_handle,"YDir","Reverse");
+set(colour_handle,'YDir','Reverse');
 caxis([0,70]);
 
-
-set(subplot_1,'Position',original_sizes(1,:));
-set(subplot_2,'Position',original_sizes(2,:));
-
-%
+% Create a custom colormap
 colour_stops = [0,0.3010,0.7450,0.9330;
                 1.81,0,0.447,0.741;
                 5.3,0.764,0.564,0.831;
@@ -180,11 +172,14 @@ colour_stops = [0,0.3010,0.7450,0.9330;
                 36,0.981,0.285,0.417;
                 70,0.376,0.180,0;];
             
-            
 expanded_colour_map = Expand_CMap(colour_stops,1000);
-              
 colormap(expanded_colour_map);
 
+% Rescale the subplots to maintain square shape
+set(subplot_1,'Position',original_sizes(1,:));
+set(subplot_2,'Position',original_sizes(2,:));
+
+% Scale the figure
 figure_height = 500;
 figure_width = 1100;
 
@@ -195,10 +190,10 @@ bottom_margin = 0.1*screen_size(4);
 set(gcf,'Position',[left_margin,bottom_margin,figure_width,figure_height]);
 
 %% Saving
-exportgraphics(gcf,root_directory+"Figures/Cenozoic_CO2_dTemperature.png","Resolution",600);
-exportgraphics(gcf,root_directory+"Figures/Cenozoic_CO2_dTemperature.pdf");
+exportgraphics(gcf,root_directory+"/Figures/Cenozoic_CO2_dTemperature.png","Resolution",600);
+exportgraphics(gcf,root_directory+"/Figures/Cenozoic_CO2_dTemperature.pdf");
 
-%%
+%% Function to look up CO2 for a given age
 function output_co2 = lookupCO2(age_bins,co2_bins,age_lookup)
     co2 = co2_bins(age_bins<max(age_lookup) & age_bins>min(age_lookup));
     output_co2 = nanmean(co2);

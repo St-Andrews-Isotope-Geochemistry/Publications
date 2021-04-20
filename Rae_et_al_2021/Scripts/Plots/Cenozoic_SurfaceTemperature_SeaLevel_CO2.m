@@ -2,15 +2,15 @@
 %% Load the data
 root_directory = "./../../";
 
+% d18O
 westerhold2020 = readtable(root_directory+"/Data/Westerhold_2020_d18O.xlsx",'Sheet','Matlab','Format','Auto');
 
+% Sea level
 sea_level = readtable(root_directory+"/Data/Miller_2020_SeaLevel.xlsx",'sheet','data');
 sea_level_smooth = readtable(root_directory+"/Data/Miller_2020_SeaLevel.xlsx",'sheet','smooth');
 
-% Alkenone Ep
-% Anchored approach
+% Alkenones
 alkenones_anchored = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','anchored');
-% Diffusive approach
 alkenones_diffusive = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','diffusive');
 
 % CO2
@@ -60,7 +60,7 @@ hold(plot_handles(current_plot_index),'on')
 plot(westerhold2020.age,westerhold2020.surface_ocean_temperature,'x','Color',rgb('LightGray'),'MarkerSize',2,'Parent',plot_handles(current_plot_index))
 plot(westerhold2020.age,westerhold2020.surface_ocean_temperature_smooth,'-','Color',rgb('Black'),'LineWidth',1.5,'Parent',plot_handles(current_plot_index))
 
-ylabel(plot_handles(current_plot_index),'Surface Temperature (^oC)')
+ylabel(plot_handles(current_plot_index),"Surface Temperature (^oC)")
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,34])
 
 % Sea Level
@@ -70,7 +70,7 @@ hold(plot_handles(current_plot_index),'on')
 plot(sea_level.age/1000, sea_level.SL,'x','MarkerEdgeColor',[0.7922    0.9020    0.7922],'MarkerFaceColor','none','MarkerSize',3,'Parent',plot_handles(current_plot_index))
 plot(sea_level_smooth.age/1000, sea_level_smooth.SL,'-','Color',rgb('Green'),'LineWidth',1.5,'Parent',plot_handles(current_plot_index))
 
-ylabel(plot_handles(current_plot_index),'Sea Level (m)')
+ylabel(plot_handles(current_plot_index),"Sea Level (m)")
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,inf])
 
 % CO2
@@ -88,7 +88,7 @@ plot(co2_data{1}.age/1000,log2(co2_smooth{1}),':','Color',rgb('DarkBlue'),'LineW
 plot(co2_data{3}.age/1000,log2(co2_smooth{3}),':','Color',rgb('DarkBlue'),'LineWidth',1,'Parent',plot_handles(current_plot_index));
 
 
-ylabel(plot_handles(current_plot_index),'Atmospheric CO_2 (ppm)')
+ylabel(plot_handles(current_plot_index),"Atmospheric CO_2 (ppm)")
 
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),log2([180,2200])])
 
@@ -106,7 +106,7 @@ set(plot_handles(3),'Position', [axpos(1),axpos(2)-0.02,axpos(3),axpos(4)+0.1])
 
 set(plot_handles(1),'XTick',age_ticks)
 set(plot_handles(number_of_plots),'XTick',age_ticks)
-xlabel(plot_handles(1),'Age (Ma)')
+xlabel(plot_handles(1),"Age (Ma)")
 
 for plot_index = 1:number_of_plots
     set(plot_handles(plot_index),'XDir',age_direction,'TickDir','Out','XMinorTick','On','YMinorTick','On','FontSize',14)
