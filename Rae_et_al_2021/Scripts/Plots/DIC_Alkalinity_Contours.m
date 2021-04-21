@@ -1,4 +1,6 @@
 % DIC vs Alkalinity
+root_directory = "./../../";
+
 dic = 1700:100:2100;
 alkalinity = 2100:100:2500;
 
@@ -58,5 +60,5 @@ axis square
 box on
 
 %% Saving
-exportgraphics(gcf,"./Figures/DIC_Alkalinity_Contours.png","Resolution",600);
-exportgraphics(gcf,"./Figures/DIC_Alkalinity_Contours.pdf");
+exportgraphics(gcf,root_directory+"/Figures/DIC_Alkalinity_Contours.png","Resolution",600);
+exportgraphics(gcf,root_directory+"/Figures/DIC_Alkalinity_Contours.pdf");
