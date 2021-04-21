@@ -6,7 +6,7 @@ root_directory = "./../../";
 westerhold2020 = readtable(root_directory+"/Data/Westerhold_2020_d18O.xlsx",'Sheet','Matlab','Format','Auto');
 
 % Magnesium + Calcium
-mg_ca = readtable(root_directory+"/Data/Publication/Rae_2021_Boron_pH_CO2_CO2system.xlsx",'sheet','Mg_Ca_sw');
+mg_ca = readtable(root_directory+"/Data/Supplements/Rae_2021_Boron_pH_CO2_CO2system.xlsx",'sheet','Mg_Ca_sw');
 
 % pH
 d11B_pH = readtable(root_directory+"/Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet","d11B_data");
@@ -215,12 +215,12 @@ for plot_index = 1:number_of_plots
     set(plot_handles(plot_index),'XDir',age_direction,'TickDir','Out','XMinorTick','On','YMinorTick','On','FontSize',12)
     xlim(plot_handles(plot_index),age_limits);
 end
-set(gcf,'Position',[50,235,517,750]);
+set(gcf,'Position',[50,235,700,750]);
 
 for plot_index = 1:2:number_of_plots
     current_label = get(plot_handles(plot_index),'YLabel');
     current_label.Rotation = -90;
-    current_label.Position(1) = -20;
+    current_label.Position(1) = -14;
 end
 
 %% Saving

@@ -152,14 +152,16 @@ axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,12000]);
 yticks = [100,200,300,400,500,600,800,1000,1200,1500,2000,3000];
 set(plot_handles(1),'YScale','Log','YTick',yticks,'YTickLabel',num2str(yticks'));
 
-axpos = get(plot_handles(1),'Position');
-set(plot_handles(1),'Position', [axpos(1) axpos(2) axpos(3) axpos(4)+0.17])
-axpos = get(plot_handles(2),'Position');
-set(plot_handles(2),'Position', [axpos(1) axpos(2)+0.05 axpos(3) axpos(4)])
-axpos = get(plot_handles(3),'Position');
-set(plot_handles(3),'Position', [axpos(1) axpos(2)+0.02 axpos(3) axpos(4)])
-axpos = get(plot_handles(4),'Position');
-set(plot_handles(4),'Position', [axpos(1) axpos(2)+0.02 axpos(3) axpos(4)])
+axis_position = get(plot_handles(1),'Position');
+set(plot_handles(1),'Position', [axis_position(1),axis_position(2),axis_position(3),axis_position(4)+0.17])
+axis_position = get(plot_handles(2),'Position');
+set(plot_handles(2),'Position', [axis_position(1),axis_position(2)+0.05,axis_position(3),axis_position(4)])
+axis_position = get(plot_handles(3),'Position');
+set(plot_handles(3),'Position', [axis_position(1),axis_position(2)+0.02,axis_position(3),axis_position(4)])
+axis_position = get(plot_handles(4),'Position');
+set(plot_handles(4),'Position', [axis_position(1),axis_position(2)+0.02,axis_position(3),axis_position(4)])
+axis_position = get(plot_handles(5),'Position');
+set(plot_handles(5),'Position', [axis_position(1),axis_position(2)-0.04,axis_position(3),axis_position(4)])
 
 set(plot_handles(1),'XTick',age_ticks)
 set(plot_handles(number_of_plots),'XTick',age_ticks)

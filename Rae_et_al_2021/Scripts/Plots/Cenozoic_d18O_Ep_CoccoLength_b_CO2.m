@@ -3,14 +3,14 @@
 root_directory = "./../../";
 
 % d18O
-westerhold2020 = readtable(root_directory+"Data/Westerhold_2020_d18O.xlsx",'Sheet','Matlab','Format','Auto');
+westerhold2020 = readtable(root_directory+"/Data/Westerhold_2020_d18O.xlsx",'Sheet','Matlab','Format','Auto');
 
 % Alkenones
-alkenones_anchored = readtable(root_directory+"Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','anchored');
-alkenones_diffusive = readtable(root_directory+"Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','diffusive');
+alkenones_anchored = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','anchored');
+alkenones_diffusive = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','diffusive');
 
 % Epoch data
-epochs = readtable(root_directory+"Data/Cenozoic_Epochs.xlsx");
+epochs = readtable(root_directory+"/Data/Cenozoic_Epochs.xlsx");
 
 %% Analyse the data
 % Remove NaN and smooth Westerhold
@@ -23,8 +23,8 @@ alkenones_anchored = sortrows(alkenones_anchored,'age');
 alkenones_diffusive = sortrows(alkenones_diffusive,'age');
 
 %% Make the figure
-age_limits = [0,60];
-age_ticks = 0:10:60;
+age_limits = [0,70];
+age_ticks = 0:10:70;
 
 % Normal - time going right to left or
 % Reverse - time going left to right
@@ -64,7 +64,7 @@ for diffusive_index = 1:height(alkenones_diffusive)
     plot(alkenones_diffusive.age(diffusive_index)/1000,alkenones_diffusive.ep_50pc(diffusive_index),'x','MarkerEdgeColor',rgb(alkenones_diffusive.colour(diffusive_index)),'MarkerFaceColor','none','MarkerSize',alkenones_diffusive.size(diffusive_index),'Parent',plot_handles(current_plot_index))
 end
 
-ylabel(plot_handles(current_plot_index),join([char(949),"_p (",char(8240),")"]))
+ylabel(plot_handles(current_plot_index),char(join([char(949),"_p (",char(8240),")"],"")))
 axis(plot_handles(current_plot_index),[age_limits(1),age_limits(2),-inf,inf])
 set(plot_handles(current_plot_index),'YScale','Log')
 
@@ -113,6 +113,8 @@ axis_position = get(plot_handles(2),'Position');
 set(plot_handles(2),'Position',[axis_position(1),axis_position(2)+0.1,axis_position(3),axis_position(4)-0.05])
 axis_position = get(plot_handles(3),'Position');
 set(plot_handles(3),'Position',[axis_position(1),axis_position(2)+0.08,axis_position(3),axis_position(4)-0.05])
+axis_position = get(plot_handles(5),'Position');
+set(plot_handles(5),'Position',[axis_position(1),axis_position(2)-0.02,axis_position(3),axis_position(4)-0.05])
 
 %% Display
 set(plot_handles(1),'XTick',age_ticks)
