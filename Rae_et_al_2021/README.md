@@ -3,6 +3,9 @@
 ## Citation
 James W.B. Rae, Yi Ge Zhang, Xiaoqing Liu, Gavin L. Foster, Heather M. Stoll and Ross D.M. Whiteford, **2021**, _Atmospheric CO_<sub>2</sub> _over the last 66 million years from marine archives_.
 
+## Supplement
+Files included in the paper supplement are found [here](./Data/Supplements/).
+
 ## Quick Links
 - [Figure 3](#figure-3)
 - [Figure 4](#figure-4)
