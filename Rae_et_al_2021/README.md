@@ -1,7 +1,7 @@
 # Materials and code associated with Rae et al., 2021
 
 ## Citation
-James W.B. Rae, Yi Ge Zhang, Xiaoqing Liu, Gavin L. Foster, Heather M. Stoll and Ross D.M. Whiteford, **2021**, _Atmospheric CO_<sub>2</sub> _over the last 66 million years from marine archives_.
+James W.B. Rae, Yi Ge Zhang, Xiaoqing Liu, Gavin L. Foster, Heather M. Stoll and Ross D.M. Whiteford, **2021**, _Atmospheric CO_<sub>2</sub> _over the last 66 million years from marine archives_. https://doi.org/10.1146/annurev-earth-082420-063026
 
 ## How to download
 Either download from [this page](https://github.com/St-Andrews-Isotope-Geochemistry/Private_Publications/tree/Rae_et_al_2021) using the online interface or use the following git commands:
