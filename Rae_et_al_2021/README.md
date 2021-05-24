@@ -11,7 +11,6 @@ git remote add origin https://github.com/St-Andrews-Isotope-Geochemistry/Publica
 git fetch origin Rae_et_al_2021
 git checkout Rae_et_al_2021
 git submodule update --recursive --init
-git lfs pull
 ```
 
 You may need to install git lfs:
