@@ -18,8 +18,30 @@ You may need to install git lfs:
 git lfs install
 ```
 
-## Supplement
+## Contents
+### Supplement
 Files included in the paper supplement are found [here](./Data/Supplements/).
+
+### Data
+Other data files are found [here](./Data/)
+
+### Scripts
+Code files are separated into [analysis](./Scripts/Analysis/) and [plots](./Scripts/Plots).
+Analysis contains two files, one to perform calculations of &delta;^{11}B to pH and atmospheric CO_2 concentration (using various assumptions of a second carbonate system parameter) and another to perform a Monte Carlo simulation for an estimation of the uncertainties.
+
+Before you run any analyses, you'll need to add the Dependencies folder to the Matlab path.
+
+The Plots folder contains a script for most of the Figures in the manuscript.
+
+### Functions
+The Functions folder contains the calculation routine for converting &delta;^{11}B to pH.
+
+### Dependencies
+Additional functions to facilitate the plots and CO_2 calculations.
+The CO2_Systematics folder contains a submodule for performing ocean carbonate chemistry calculations. This is an updated version of [csys](https://www.soest.hawaii.edu/oceanography/faculty/zeebe_files/CO2_System_in_Seawater/csys.html) which uses the [MyAMI model](https://github.com/St-Andrews-Isotope-Geochemistry/MyAMI) for equilibrium coefficients, and has a few other minor updates.
+
+### Figures
+This folder contains the image files for generated plots as both PDF and PNG files.
 
 ## Quick Links
 - [Figure 3](#figure-3)
