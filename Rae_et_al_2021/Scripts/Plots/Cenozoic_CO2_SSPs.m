@@ -18,9 +18,9 @@ mauna_loa_CO2 = readtable(root_directory+"/Data/Recent_CO2.xlsx","Sheet","MaunaL
 
 % Alkenones
 % Anchored approach
-alkenones_anchored = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx","Sheet","anchored");
+alkenones_anchored = readtable(root_directory+"/Data/Supplements/Rae_2021_Alkenone_CO2.xlsx","Sheet","anchored");
 % Diffusive approach
-alkenones_diffusive = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx","Sheet","diffusive");
+alkenones_diffusive = readtable(root_directory+"/Data/Supplements/Rae_2021_Alkenone_CO2.xlsx","Sheet","diffusive");
 
 %% Analyse the data
 % Smoothing CO2

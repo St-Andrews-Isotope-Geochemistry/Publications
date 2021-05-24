@@ -10,8 +10,8 @@ sea_level = readtable(root_directory+"/Data/Miller_2020_SeaLevel.xlsx",'sheet','
 sea_level_smooth = readtable(root_directory+"/Data/Miller_2020_SeaLevel.xlsx",'sheet','smooth');
 
 % Alkenones
-alkenones_anchored = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','anchored');
-alkenones_diffusive = readtable(root_directory+"/Data/Rae_2021_Alkenone_CO2.xlsx",'sheet','diffusive');
+alkenones_anchored = readtable(root_directory+"/Data/Supplements/Rae_2021_Alkenone_CO2.xlsx",'sheet','anchored');
+alkenones_diffusive = readtable(root_directory+"/Data/Supplements/Rae_2021_Alkenone_CO2.xlsx",'sheet','diffusive');
 
 % CO2
 co2_sheet_names = ["alkalinity_low","alkalinity","alkalinity_high"];

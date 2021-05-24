@@ -13,7 +13,7 @@ for sheet_index = 1:numel(co2_sheet_names)
     co2_data{sheet_index} = readtable(root_directory+"/Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx","Sheet",co2_sheet_names(sheet_index));
 end
 
-ca_mg = readtable(root_directory+"/Data/Publication/Rae_2021_Boron_pH_CO2_CO2system.xlsx",'sheet','Mg_Ca_sw');
+ca_mg = readtable(root_directory+"/Data/Supplements/Rae_2021_Boron_pH_CO2_CO2system.xlsx",'sheet','Mg_Ca_sw');
 
 %% Analyse the data
 westerhold2020 = westerhold2020(~isnan(westerhold2020.age) & ~isnan(westerhold2020.d18O),:);
