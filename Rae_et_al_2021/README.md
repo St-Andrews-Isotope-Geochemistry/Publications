@@ -29,7 +29,7 @@ Other data files are found [here](./Data/)
 Code files are separated into [analysis](./Scripts/Analysis/) and [plots](./Scripts/Plots).
 Analysis contains two files, one to perform calculations of &delta;^{11}B to pH and atmospheric CO_2 concentration (using various assumptions of a second carbonate system parameter) and another to perform a Monte Carlo simulation for an estimation of the uncertainties.
 
-Before you run any analyses, you'll need to add the Dependencies folder to the Matlab path.
+Before you run any analyses, you'll need to add the Dependencies and Functions folders to the Matlab path.
 
 The Plots folder contains a script for most of the Figures in the manuscript.
 

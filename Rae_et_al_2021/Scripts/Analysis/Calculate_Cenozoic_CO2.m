@@ -3,21 +3,23 @@
 
 tic
 %% Load data 
-boron_data_path = './../../Data/Rae_2021_Boron_Data_Input.xlsx';
-d11B_data = readtable(boron_data_path,'sheet','d11Bdata_byStudy');
-d11B_sw = readtable(boron_data_path,'sheet','d11Bsw');
+root_directory = "./../../";
 
-mg_ca_average = readtable(boron_data_path,'sheet','Mg_Ca_sw');
+boron_data_path = root_directory+"/Data/Rae_2021_Boron_Data_Input.xlsx";
+d11B_data = readtable(boron_data_path,"Sheet","d11Bdata_byStudy");
+d11B_sw = readtable(boron_data_path,"Sheet","d11Bsw");
 
-CCDZT19 = readtable('./../../Data/ZeebeTyrrell_2019.xlsx');
+mg_ca_average = readtable(boron_data_path,"Sheet","Mg_Ca_sw");
+
+CCDZT19 = readtable(root_directory+"/Data/ZeebeTyrrell_2019.xlsx");
 
 % Alkenone Ep
 % Anchored approach
-alkenones_anchored = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','anchored');
-alkenones_anchored = sortrows(alkenones_anchored,'age');
+alkenones_anchored = readtable(root_directory+"/Data/Supplements/Rae_2021_Alkenone_CO2.xlsx","Sheet","Anchored");
+alkenones_anchored = sortrows(alkenones_anchored,"age");
 % Diffusive approach
-alkenones_diffusive = readtable('./../../Data/Rae_2021_Alkenone_CO2.xlsx','sheet','diffusive');
-alkenones_diffusive = sortrows(alkenones_diffusive,'age');
+alkenones_diffusive = readtable(root_directory+"/Data/Supplements/Rae_2021_Alkenone_CO2.xlsx","Sheet","Diffusive");
+alkenones_diffusive = sortrows(alkenones_diffusive,"age");
 
 % alkenone comp
 ep_age = [alkenones_anchored.age(alkenones_anchored.age/1000<23); alkenones_diffusive.age(alkenones_diffusive.age/1000>23)];
@@ -41,7 +43,7 @@ d11B_data_d11Bsw_high = d11B_data;
 
 % Calculate d11B_4
 % Fill in calibration c and m
-calibrations = readtable(boron_data_path,'Sheet','calibrations','Format','Auto');
+calibrations = readtable(boron_data_path,"Sheet","calibrations","Format","Auto");
 % Preallocate space
 d11B_data.calibration_gradient = zeros(height(d11B_data),1);
 d11B_data.calibration_intercept = zeros(height(d11B_data),1);
@@ -113,7 +115,7 @@ end
 flag = 8; % specifies use of pH and ALK
 
 % Fill in calibration c and m
-calibrations = readtable(boron_data_path,'Sheet','calibrations','Format','Auto');
+calibrations = readtable(boron_data_path,"Sheet","calibrations","Format","Auto");
 % Preallocate space
 d11B_data_d11Bsw_low.calibration_gradient = zeros(height(d11B_data_d11Bsw_low),1);
 d11B_data_d11Bsw_low.calibration_intercept = zeros(height(d11B_data_d11Bsw_low),1);
@@ -151,7 +153,7 @@ d11B_d11Bsw_low_results = removevars(d11B_d11Bsw_low_results,{'pH'});
 flag = 8; % specifies use of pH and ALK
 
 % Fill in calibration c and m
-calibrations = readtable(boron_data_path,'Sheet','calibrations','Format','Auto');
+calibrations = readtable(boron_data_path,"Sheet","calibrations","Format","Auto");
 % Preallocate space
 d11B_data_d11Bsw_high.calibration_gradient = zeros(height(d11B_data_d11Bsw_high),1);
 d11B_data_d11Bsw_high.calibration_intercept = zeros(height(d11B_data_d11Bsw_high),1);
@@ -257,7 +259,7 @@ end
 
 %% re-calculate CO2 system w Ep smooth
 % smooth alkenone CO2 
-ep_combined.smooth_co2 = smooth(ep_combined.ep_age,ep_combined.ep_co2,30,'rlowess');
+ep_combined.smooth_co2 = smooth(ep_combined.ep_age,ep_combined.ep_co2,30,"rlowess");
 
 % find smoothed alkenone CO2 where we have d11B data
 d11B_data_ep = d11B_data;
@@ -279,7 +281,7 @@ for result_index = 1:numel(all_results)
     result = all_results(result_index);
     
     result{1}.disequilibrium_correction = zeros(height(result{1}),1);
-    result{1}.disequilibrium_correction(strcmp(result{1}.site,'999A')|strcmp(result{1}.site,'999')) = -21;
+    result{1}.disequilibrium_correction(strcmp(result{1}.site,"999A")|strcmp(result{1}.site,"999")) = -21;
     result{1}.uncorrected_xco2 = result{1}.xco2;
     result{1}.uncorrected_pco2 = result{1}.pco2;
     result{1}.xco2 = result{1}.xco2 + result{1}.disequilibrium_correction;
@@ -296,32 +298,32 @@ d11B_ccd_results = all_results{16};
 d11B_ep_results = all_results{17};
 
 %% Save results
-output_filename = "./../../Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx";
-writetable(d11B_data,output_filename,'Sheet',"d11B_data");
+output_filename = root_directory+"/Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx";
+writetable(d11B_data,output_filename,"Sheet","d11B_data");
 
-writetable(d11B_alkalinity_results{2},output_filename,'Sheet',"alkalinity");
-writetable(d11B_alkalinity_results{1},output_filename,'Sheet',"alkalinity_low");
-writetable(d11B_alkalinity_results{3},output_filename,'Sheet',"alkalinity_high");
+writetable(d11B_alkalinity_results{2},output_filename,"Sheet","alkalinity");
+writetable(d11B_alkalinity_results{1},output_filename,"Sheet","alkalinity_low");
+writetable(d11B_alkalinity_results{3},output_filename,"Sheet","alkalinity_high");
 
-writetable(d11B_d11Bsw_low_results,output_filename,'Sheet',"alkalinity_d11Bsw_low");
-writetable(d11B_d11Bsw_high_results,output_filename,'Sheet',"alkalinity_d11Bsw_high");
+writetable(d11B_d11Bsw_low_results,output_filename,"Sheet","alkalinity_d11Bsw_low");
+writetable(d11B_d11Bsw_high_results,output_filename,"Sheet","alkalinity_d11Bsw_high");
 
-writetable(d11B_dic_results,output_filename,'Sheet',"dic");
+writetable(d11B_dic_results,output_filename,"Sheet","dic");
 
-writetable(d11B_omega_results{1,2},output_filename,'Sheet',"omega5");
-writetable(d11B_omega_results{2,2},output_filename,'Sheet',"omega65");
-writetable(d11B_omega_results{3,2},output_filename,'Sheet',"omega8");
+writetable(d11B_omega_results{1,2},output_filename,"Sheet","omega5");
+writetable(d11B_omega_results{2,2},output_filename,"Sheet","omega65");
+writetable(d11B_omega_results{3,2},output_filename,"Sheet","omega8");
 
-writetable(d11B_ccd_results,output_filename,'Sheet',"ccd");
+writetable(d11B_ccd_results,output_filename,"Sheet","ccd");
 
-writetable(d11B_ep_results,output_filename,'Sheet',"ep_results");
+writetable(d11B_ep_results,output_filename,"Sheet","ep_results");
 
-writetable(d11B_omega_results{1,3},output_filename,'Sheet',"omega5_high_ca");
-writetable(d11B_omega_results{2,3},output_filename,'Sheet',"omega65_high_ca");
-writetable(d11B_omega_results{3,3},output_filename,'Sheet',"omega8_high_ca");
-writetable(d11B_omega_results{1,1},output_filename,'Sheet',"omega5_low_ca");
-writetable(d11B_omega_results{2,1},output_filename,'Sheet',"omega65_low_ca");
-writetable(d11B_omega_results{3,1},output_filename,'Sheet',"omega8_low_ca");
+writetable(d11B_omega_results{1,3},output_filename,"Sheet","omega5_high_ca");
+writetable(d11B_omega_results{2,3},output_filename,"Sheet","omega65_high_ca");
+writetable(d11B_omega_results{3,3},output_filename,"Sheet","omega8_high_ca");
+writetable(d11B_omega_results{1,1},output_filename,"Sheet","omega5_low_ca");
+writetable(d11B_omega_results{2,1},output_filename,"Sheet","omega65_low_ca");
+writetable(d11B_omega_results{3,1},output_filename,"Sheet","omega8_low_ca");
 
-save("./../../Data/Rae_2021_Cenozoic_CO2_Workspace.mat");
+save(root_directory+"/Data/Rae_2021_Cenozoic_CO2_Workspace.mat");
 toc

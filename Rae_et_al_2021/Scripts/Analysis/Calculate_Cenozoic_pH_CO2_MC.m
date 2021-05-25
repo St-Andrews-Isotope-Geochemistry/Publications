@@ -4,29 +4,31 @@
 % before final version may also want to include Raitzsch 2020 in review https://cp.copernicus.org/preprints/cp-2020-96/
 
 tic
-%% Load data 
-boron_data_path = './Data/Rae_2021_Boron_Compilation_Input.xlsx';
-d11B_data = readtable(boron_data_path,'sheet','d11Bdata_byStudy');
-d11B_sw_JR = readtable('./Data/d11Bsw_compilation.xlsx','sheet','Rae2021comp');
+%% Load data
+root_directory = "./../../";
 
-mg_ca_average = readtable('./Data/Mg_Ca_compilation.xlsx','sheet','Matlab_average');
+boron_data_path = root_directory+"/Data/Rae_2021_Boron_Data_Input.xlsx";
+d11B_data = readtable(boron_data_path,"Sheet","d11Bdata_byStudy");
+d11B_sw = readtable(boron_data_path,'sheet','d11Bsw');
 
-CCDZT19 = readtable('./Data/ZeebeTyrrell_2019.xlsx');
+mg_ca_average = readtable(boron_data_path,'Sheet','Mg_Ca_sw');
+
+CCDZT19 = readtable(root_directory+"/Data/ZeebeTyrrell_2019.xlsx");
 
 % Alkenone Ep
 % Stoll data
-HS_Alk = readtable('./Data/Stoll_2019_Alkenone_CO2.xlsx','sheet','Matlab');
-HS_Alk = sortrows(HS_Alk,'age');
+alkenones_anchored = readtable(root_directory+"/Data/Supplements/Rae_2021_Alkenone_CO2.xlsx","Sheet","Anchored");
+alkenones_anchored = sortrows(alkenones_anchored,'age');
 % Zhang data
-YZ_Alk = readtable('./Data/Zhang_2017_Alkenone_CO2.xlsx','sheet','Matlab');
-YZ_Alk = sortrows(YZ_Alk,'age');
+alkenones_diffusive = readtable(root_directory+"/Data/Supplements/Rae_2021_Alkenone_CO2.xlsx","Sheet","Diffusive");
+alkenones_diffusive = sortrows(alkenones_diffusive,'age');
 
 % alkenone smooth comp
-ep_age = [HS_Alk.age(HS_Alk.age/1000<23); YZ_Alk.age(YZ_Alk.age/1000>23)];
-ep_co2 = [HS_Alk.CO2(HS_Alk.age/1000<23); YZ_Alk.CO2(YZ_Alk.age/1000>23)];
+ep_age = [alkenones_anchored.age(alkenones_anchored.age/1000<23); alkenones_diffusive.age(alkenones_diffusive.age/1000>23)];
+ep_co2 = [alkenones_anchored.co2(alkenones_anchored.age/1000<23); alkenones_diffusive.co2(alkenones_diffusive.age/1000>23)];
 ep_combined = table(ep_age,ep_co2);
 
-ep_combined.smooth_co2 = smooth(ep_combined.ep_age,ep_combined.ep_co2,30,'rlowess');
+ep_combined.smooth_co2 = smooth(ep_combined.ep_age,ep_combined.ep_co2,30,"rlowess");
 
 %% pH
 % Exclude any datasets
@@ -43,7 +45,7 @@ d11B_data = sortrows(d11B_data,'age');
 
 % Calculate d11B_4
 % Fill in calibration c and m
-calibrations = readtable(boron_data_path,'Sheet','calibrations','Format','Auto');
+calibrations = readtable(boron_data_path,"Sheet","calibrations","Format","Auto");
 % Preallocate space
 d11B_data.calibration_gradient = zeros(height(d11B_data),1);
 d11B_data.calibration_intercept = zeros(height(d11B_data),1);
@@ -55,22 +57,13 @@ end
 
 % Correct calibration for d11Bsw
 % Find d11B_sw for each sample
-d11B_data.d11B_sw = interp1(d11B_sw_JR.age,d11B_sw_JR.d11B_sw,d11B_data.age/1000);
-d11B_data.d11B_sw_low = interp1(d11B_sw_JR.age,d11B_sw_JR.d11B_sw_95_low,d11B_data.age/1000);
-d11B_data.d11B_sw_high = interp1(d11B_sw_JR.age,d11B_sw_JR.d11B_sw_95_high,d11B_data.age/1000);
+d11B_data.d11B_sw = interp1(d11B_sw.age,d11B_sw.d11Bsw,d11B_data.age/1000);
+d11B_data.d11B_sw_low = interp1(d11B_sw.age,d11B_sw.d11Bsw_low,d11B_data.age/1000);
+d11B_data.d11B_sw_high = interp1(d11B_sw.age,d11B_sw.d11Bsw_high,d11B_data.age/1000);
 
 d11B_data.calibration_intercept_sw = d11B_data.calibration_intercept+(39.61-d11B_data.d11B_sw).*(d11B_data.calibration_gradient-1);
 d11B_data.calibration_intercept_sw_low = d11B_data.calibration_intercept+(39.61-d11B_data.d11B_sw_low).*(d11B_data.calibration_gradient-1);
 d11B_data.calibration_intercept_sw_high = d11B_data.calibration_intercept+(39.61-d11B_data.d11B_sw_high).*(d11B_data.calibration_gradient-1);
-
-% Special treatment of Henehan 2019 - where tuning was done with d11B_sw at
-% age=same as dataset
-% 
-% henehan_2019_boolean = strcmp(d11B_data.ref,'Henehan et al., 2019');
-% henehan_2019_d11B_sw = d11B_sw_JR.d11B_sw(strcmp(d11B_sw_JR.source,"Henehan2019"));
-% d11B_data(henehan_2019_boolean,:).calibration_intercept_sw = d11B_data(henehan_2019_boolean,:).calibration_intercept+(henehan_2019_d11B_sw-d11B_data(henehan_2019_boolean,:).d11B_sw).*(d11B_data(henehan_2019_boolean,:).calibration_gradient-1);
-% d11B_data(henehan_2019_boolean,:).calibration_intercept_sw_low = d11B_data(henehan_2019_boolean,:).calibration_intercept+(henehan_2019_d11B_sw-d11B_data(henehan_2019_boolean,:).d11B_sw_low).*(d11B_data(henehan_2019_boolean,:).calibration_gradient-1);
-% d11B_data(henehan_2019_boolean,:).calibration_intercept_sw_high = d11B_data(henehan_2019_boolean,:).calibration_intercept+(henehan_2019_d11B_sw-d11B_data(henehan_2019_boolean,:).d11B_sw_high).*(d11B_data(henehan_2019_boolean,:).calibration_gradient-1);
 
 d11B_data.d11B_4 = (d11B_data.d11B-d11B_data.calibration_intercept_sw)./d11B_data.calibration_gradient;
 d11B_data.d11B_4_low = (d11B_data.d11B-d11B_data.calibration_intercept_sw_low)./d11B_data.calibration_gradient;
@@ -98,69 +91,59 @@ alkalinity_offset_points = [  0,175;
 alkalinity_offset = interp1(alkalinity_offset_points(:,1),alkalinity_offset_points(:,2),d11B_data.age/1000);
 
 d11B_data.alkalinity = repelem(2330,height(d11B_data))'; % Alkalinity at 2330 as in MB15
-% d11B_data.alkalinity_low = d11B_data.alkalinity-alkalinity_offset;
-% d11B_data.alkalinity_high = d11B_data.alkalinity+alkalinity_offset;
 
 % Create MyAMI object
 myami = MyAMI.MyAMI("Precalculated",true);
 
 %% do Monte Carlo simulation for pH uncertainty 
-nmc = 10000;
+number_of_simulations = 10000;
 
-pHmc = ones(height(d11B_data),nmc);
-CO2mc = ones(height(d11B_data),nmc);
+pH_monte_carlo = ones(height(d11B_data),number_of_simulations);
+CO2_monte_carlo = ones(height(d11B_data),number_of_simulations);
 
 % uncertainties input below are 1 sigma for d11B measurements and
 % indicative ~1 sigma for T and S.  Detailed uncertainty evaluation -
 % including calibrations, d11Bsw, proper temperature uncertainties etc. -
 % is beyond the scope of this work
 
-Ter = 1;
-Ser = 0.5;
+temperature_uncertainty = 1;
+salinity_uncertainty = 0.5;
 
-for ii = 1:nmc
-Tmc = d11B_data.temperature + randn*Ter;
-Smc = d11B_data.salinity + randn*Ser;
-d11B_4mc = d11B_data.d11B_4 + randn*d11B_data.d11B_uncertainty./2;
+for simulation_index = 1:number_of_simulations
+    temperature_monte_carlo = d11B_data.temperature + randn(height(d11B_data),1)*temperature_uncertainty;
+    salinity_monte_carlo = d11B_data.salinity + randn(height(d11B_data),1)*salinity_uncertainty;
+    d11B_4_monte_carlo = d11B_data.d11B_4 + randn(height(d11B_data),1).*d11B_data.d11B_2SD./2;
+    
+    % Calculate pH
+    [pH_monte_carlo(:,simulation_index),~] = d11BtopH(d11B_4_monte_carlo,temperature_monte_carlo,salinity_monte_carlo,d11B_data.depth,d11B_data.d11B_sw,d11B_data.magnesium_seawater,d11B_data.calcium_seawater,myami);
 
-% calculate pH
-[pHmc(:,ii),~] = d11BtopH(d11B_4mc,Tmc,Smc,d11B_data.depth,d11B_data.d11B_sw,d11B_data.magnesium_seawater,d11B_data.calcium_seawater,myami);
-% [d11B_data.pH_low,d11B_data.pKb_low] = d11BtopH(d11B_data.d11B_4_low,d11B_data.temperature,d11B_data.salinity,d11B_data.depth,d11B_data.d11B_sw_low,d11B_data.magnesium_seawater,d11B_data.calcium_seawater,myami);
-% [d11B_data.pH_high,d11B_data.pKb_high] = d11BtopH(d11B_data.d11B_4_high,d11B_data.temperature,d11B_data.salinity,d11B_data.depth,d11B_data.d11B_sw_high,d11B_data.magnesium_seawater,d11B_data.calcium_seawater,myami);
-
-% uniformly distributed random numbers between -1 and 1 using r = a + (b-a).*rand(N,1).
-Alkmc = d11B_data.alkalinity + (-1+(1--1)*rand(1,1)).*alkalinity_offset;
-% normal dist of random numbers
-% Alkmc = d11B_data.alkalinity + randn.*alkalinity_offset;
-
-% calculate CO2 
-[~,CO2systmc] = fncsysKMgCaV2(flag,Tmc,Smc,d11B_data.depth,pHmc(:,ii),NaN,NaN,NaN,Alkmc,NaN,NaN,d11B_data.magnesium_seawater,d11B_data.calcium_seawater,myami);
-CO2mc(:,ii) = CO2systmc.XCO2;
+    % Uniformly distributed random numbers between -1 and 1
+    alkalinity_monte_carlo = d11B_data.alkalinity + (2*rand(height(d11B_data),1)-1).*alkalinity_offset;
+    
+    % Calculate CO2
+    [~,co2_system_monte_carlo] = fncsysKMgCaV2(flag,temperature_monte_carlo,salinity_monte_carlo,d11B_data.depth,pH_monte_carlo(:,simulation_index),NaN,NaN,NaN,alkalinity_monte_carlo,NaN,NaN,d11B_data.magnesium_seawater,d11B_data.calcium_seawater,myami);
+    CO2_monte_carlo(:,simulation_index) = co2_system_monte_carlo.XCO2;
 
 end 
 
 %% MC stats
-
-pHmctable = table();
-pHmctable.mean = mean(pHmc,2);
-pHmctable.mode = mode(pHmc,2);
-pHmctable.median = median(pHmc,2);
-pHmctable.sd = std(pHmc,0,2);
+pH_monte_carlo_table = table();
+pH_monte_carlo_table.mean = mean(pH_monte_carlo,2);
+pH_monte_carlo_table.mode = mode(pH_monte_carlo,2);
+pH_monte_carlo_table.median = median(pH_monte_carlo,2);
+pH_monte_carlo_table.sd = std(pH_monte_carlo,0,2);
 % percentiles: 68% & 95%
-pHmctable.percentiles = prctile(pHmc,[2.5 16 84 97.5],2);
+pH_monte_carlo_table.percentiles = prctile(pH_monte_carlo,[2.5,16,84,97.5],2);
 
-CO2mctable = table();
-CO2mctable.mean = mean(CO2mc,2);
-CO2mctable.mode = mode(CO2mc,2);
-CO2mctable.median = median(CO2mc,2);
-CO2mctable.sd = std(CO2mc,0,2);
+co2_monte_carlo_table = table();
+co2_monte_carlo_table.mean = mean(CO2_monte_carlo,2);
+co2_monte_carlo_table.mode = mode(CO2_monte_carlo,2);
+co2_monte_carlo_table.median = median(CO2_monte_carlo,2);
+co2_monte_carlo_table.sd = std(CO2_monte_carlo,0,2);
 % percentiles: 68% & 95%
-CO2mctable.percentiles = prctile(CO2mc,[2.5 16 84 97.5],2);
+co2_monte_carlo_table.percentiles = prctile(CO2_monte_carlo,[2.5,16,84,97.5],2);
 
 
 %% Save results
-% output_filename = "./Data/Rae_2021_Cenozoic_CO2_Precalculated.xlsx";
-% writetable(d11B_data,output_filename,'Sheet',"d11B_data");
-% 
-% save("./Data/Rae_2021_Cenozoic_pH_MonteCarlo.mat");
+% save("./Data/Rae_2021_Cenozoic_pH_Monte_Carlo.mat");
 toc
