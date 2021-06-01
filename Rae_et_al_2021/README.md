@@ -4,7 +4,11 @@
 James W.B. Rae, Yi Ge Zhang, Xiaoqing Liu, Gavin L. Foster, Heather M. Stoll and Ross D.M. Whiteford, **2021**, _Atmospheric CO_<sub>2</sub> _over the last 66 million years from marine archives_. https://doi.org/10.1146/annurev-earth-082420-063026
 
 ## How to download
-Either download from [this page](https://github.com/St-Andrews-Isotope-Geochemistry/Private_Publications/tree/Rae_et_al_2021) using the online interface or use the following git commands:
+There are two options for downloading this repository:  
+1. Download from [this page](https://github.com/St-Andrews-Isotope-Geochemistry/Private_Publications/tree/Rae_et_al_2021) using the online interface. Click the green 'Code' button, then download zip.  
+To download the CO2_Systematics submodule, navigate [here](https://github.com/St-Andrews-Isotope-Geochemistry/CO2_Systematics/tree/script) and download the contents of this repository into the Dependencies->CO2_Systematics folder.
+
+2. Use the following git commands:
 ```
 git init
 git remote add origin https://github.com/St-Andrews-Isotope-Geochemistry/Publications
@@ -26,10 +30,13 @@ Files included in the paper supplement are found [here](./Data/Supplements/).
 Other data files are found [here](./Data/)
 
 ### Scripts
+Code is in the Matlab programming language, tested with Matlab2020b, and requires at least Matlab2021a.
+The Curve Fitting toolbox is required for smoothing functions.
+
 Code files are separated into [analysis](./Scripts/Analysis/) and [plots](./Scripts/Plots).
 Analysis contains two files, one to perform calculations of &delta;^{11}B to pH and atmospheric CO_2 concentration (using various assumptions of a second carbonate system parameter) and another to perform a Monte Carlo simulation for an estimation of the uncertainties.
 
-Before you run any analyses, you'll need to add the Dependencies and Functions folders to the Matlab path.
+Before you run any analyses, you'll need to add the Dependencies folder to the Matlab path.
 
 The Plots folder contains a script for most of the Figures in the manuscript.
 
