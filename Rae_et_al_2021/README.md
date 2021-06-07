@@ -74,6 +74,12 @@ This folder contains the image files for generated plots as both PDF and PNG fil
 
 Some figures are slightly different to those in the manuscript due to the copy editing process.
 
+## Animations
+### Animation 1
+![Animation 1][animation1]
+### Animation 2
+![Animation 2][animation2]
+
 ## Dependencies
 ### RGB
 rgb.m is used here to provide colours.
@@ -90,3 +96,6 @@ CO2_Systematics is a submodule found [here](https://github.com/St-Andrews-Isotop
 [figure6]: ./Figures/Cenozoic_SurfaceTemperature_SeaLevel_CO2.png "Cenozoic CO2 and global climate"
 [figure7]: ./Figures/Cenozoic_CO2_dTemperature.png "Relationship between CO2 and climate over the Cenozoic"
 [figure8]: ./Figures/Cenozoic_CO2_SSPs.png "Paleo CO2 context for future CO2 change scenarios"
+
+[animation1]: ./Animations/Cenozoic_CO2_SSPs_Animation.gif "Animation of palaeo CO_2, ice core CO_2, modern CO_2, and future CO_2"
+[animation2]: ./Animations/Cenozoic_CO2_Temperature_Animation.gif "Animation of palaeo CO_2 and palaeo temperature"
