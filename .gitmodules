@@ -2,3 +2,6 @@
 	path = Rae_et_al_2021/Dependencies/CO2_Systematics
 	url = https://github.com/St-Andrews-Isotope-Geochemistry/CO2_Systematics
 	branch = script
+[submodule "Rae_et_al_2021/Dependencies/Geochemistry_Helpers"]
+	path = Rae_et_al_2021/Dependencies/Geochemistry_Helpers
+	url = https://github.com/St-Andrews-Isotope-Geochemistry/Geochemistry_Helpers
