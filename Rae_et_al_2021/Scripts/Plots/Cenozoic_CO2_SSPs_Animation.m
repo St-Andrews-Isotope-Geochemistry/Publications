@@ -99,7 +99,7 @@ set(plot_handles(1),'YLim',[150,1700],'XDir','Reverse','TickDir','Out','YMinorTi
 
 % exportgraphics(gcf,"Cenozoic-Today_Start.pdf");
 
-wobj = VideoWriter('./../../Animations/Cenozoic_CO2_SSPs_Animation.avi');
+wobj = VideoWriter('./../../Animations/Cenozoic_CO2_SSPs_Animation.mp4',"MPEG-4");
 wobj.FrameRate = 30;                  % frames per second (video speed)
 open(wobj);                           % open file
 for animation_index = 70:-0.2:1

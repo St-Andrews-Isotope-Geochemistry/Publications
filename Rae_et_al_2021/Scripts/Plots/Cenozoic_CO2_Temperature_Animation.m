@@ -144,7 +144,7 @@ expanded_colourmap = colourmap.getColours(100);
 colormap(expanded_colourmap.colours.rgb);
 cla(upper_plot_handles(1));
 
-wobj = VideoWriter('./../../Animations/Cenozoic_CO2_Temperature_Animation.avi');
+wobj = VideoWriter('./../../Animations/Cenozoic_CO2_Temperature_Animation.mp4',"MPEG-4");
 wobj.FrameRate = 30;                  % frames per second (video speed)
 open(wobj);                           % open file
 for animation_index = 70:-0.2:0
